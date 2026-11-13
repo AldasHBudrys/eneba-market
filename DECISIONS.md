@@ -19,3 +19,9 @@
 - Local dev server = `php -S -t public` instead of `artisan serve` — Avast deletes Laravel's router script (false positive); the plain built-in server sends unknown paths to index.php anyway.
 - Composer via `--prefer-source` + custom CA bundle — Avast intercepts HTTPS and locks downloaded zips; changing antivirus settings is the user's call.
 - Dockerfile with `artisan serve` on Render — Linux container has no Avast; simplest way to run PHP on a free tier (shortcut noted in the file).
+- One product row per edition (game × platform × region) — matches how Eneba lists keys; filters stay simple WHERE clauses.
+- Stock = count of unsold game_keys, no stock column — a counter could drift from the real keys; a count can't.
+- products.popularity instead of computing best sellers from orders — there are no orders yet; checkout will bump it later.
+- Seeders without Faker, fixed mt_srand seed — Faker is dev-only (missing on Render); same data on every run.
+- Seed on every deploy, skip if products exist — Render free tier has no shell to run seeds by hand.
+- Placeholder cover images (placehold.co) — no copyright issues with real game art; marked as a shortcut.

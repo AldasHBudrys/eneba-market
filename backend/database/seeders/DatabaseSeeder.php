@@ -2,24 +2,25 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Safe to run on every deploy: seeds only an empty database, never duplicates or overwrites real orders.
+        if (DB::table('products')->exists()) {
+            $this->command?->info('Products already exist, skipping seed.');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+            return;
+        }
+
+        DB::transaction(function () {
+            $this->call([CatalogSeeder::class, HomepageSeeder::class]);
+        });
     }
 }

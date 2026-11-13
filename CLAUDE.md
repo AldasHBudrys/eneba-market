@@ -49,7 +49,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 **Day 1**
 - [x] Scaffold frontend + backend (Laravel 13 + Sanctum, `/api/health`; Vite + Tailwind tokens; works locally against Neon `dev`)
 - [x] Deploy hello world — live: https://eneba-market.vercel.app (API: https://eneba-market-api.onrender.com, Neon `production`); push to `main` auto-deploys both
-- [ ] Schema + seed
+- [x] Schema + seed (70 products, 6 sellers, 264 offers, 769 keys, 3 homepage blocks; pg_trgm index)
 - [ ] Store API (filters, sort, pagination)
 
 **Day 2**

@@ -15,4 +15,5 @@ RUN composer dump-autoload --optimize && php artisan package:discover
 
 # shortcut: `artisan serve` (PHP's built-in server, 4 workers) instead of nginx + php-fpm; fine for a demo, swap for a real web server under real traffic.
 ENV PHP_CLI_SERVER_WORKERS=4
-CMD php artisan config:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# db:seed only fills an empty database (see DatabaseSeeder), so it's safe on every start.
+CMD php artisan config:cache && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
