@@ -18,7 +18,7 @@ Composer needs `COMPOSER_CAFILE`/`GIT_SSL_CAINFO` = Herd's cacert + Avast root, 
 
 Backend (`cd backend`):
 - `php artisan migrate:fresh --seed` (rebuild DB + test data)
-- `php artisan test`
+- `php artisan test` (uses Neon `test` branch via `.env.testing`; skips if DB_URL is empty — never point it at dev/production)
 
 Frontend (`cd frontend`):
 - `npm run dev`
@@ -50,7 +50,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Scaffold frontend + backend (Laravel 13 + Sanctum, `/api/health`; Vite + Tailwind tokens; works locally against Neon `dev`)
 - [x] Deploy hello world — live: https://eneba-market.vercel.app (API: https://eneba-market-api.onrender.com, Neon `production`); push to `main` auto-deploys both
 - [x] Schema + seed (70 products, 6 sellers, 264 offers, 769 keys, 3 homepage blocks; pg_trgm index)
-- [ ] Store API (filters, sort, pagination)
+- [x] Store API: `/api/products` (q, platform, region, min/max_price in cents, 7 sorts, 24/page), `/api/products/{slug}`, `/api/filters`; typo search done (pg_trgm)
 
 **Day 2**
 - [ ] Store page

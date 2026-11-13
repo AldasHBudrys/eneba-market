@@ -25,3 +25,11 @@
 - Seeders without Faker, fixed mt_srand seed — Faker is dev-only (missing on Render); same data on every run.
 - Seed on every deploy, skip if products exist — Render free tier has no shell to run seeds by hand.
 - Placeholder cover images (placehold.co) — no copyright issues with real game art; marked as a shortcut.
+- "From" price = cheapest offer with stock; price filter = "has a buyable offer in range" — an offer with 0 keys can't be bought, so it must not set or match the price.
+- Sold-out products stay listed with price null, sorted last — the brief says browse every product; nulls-last keeps price sorts useful.
+- Search = ILIKE partial match OR pg_trgm word_similarity ≥ 0.3 — measured: "wichter"→Witcher scores 0.30, unrelated names ≤ 0.25; plain similarity() is too low for long names (0.11).
+- One "unsold key" definition (GameKey::scopeUnsold) used by stock, price and filters — Day 3 checkout changes one line and everything follows.
+- API Resources shape the JSON; key codes are $hidden on the model — DB columns aren't the public API, and codes can't leak by accident.
+- Price params in cents (min_price=500) — same unit as the DB and responses; frontend converts.
+- Stable pagination: always tie-break ORDER BY id — equal sort values could otherwise jump between pages.
+- Tests on a separate Neon "test" branch, skipped unless .env.testing has a DB_URL — tests wipe their DB; Laravel would otherwise fall back to .env (dev).
