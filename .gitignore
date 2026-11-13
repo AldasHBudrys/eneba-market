@@ -1,0 +1,4 @@
+# Secrets never get committed; each app keeps a committed .env.example instead.
+.env
+.env.*
+!.env.example

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Eneba design tokens, measured from eneba.com (see ENEBA_RESEARCH.md). Usable as bg-bg, text-accent, etc. */
+@theme {
+  --color-bg: #4618ac;
+  --color-surface-dark: #1f0a4d;
+  --color-surface: #351183;
+  --color-surface-light: #7a4edf;
+  --color-accent: #fad318;
+  --color-cashback: #63e3c2;
+  --color-success: #23c299;
+  --color-discount: #84e916;
+  --color-muted: #b3aac9;
+  --font-sans: metropolis, Arial, Helvetica, sans-serif;
+}
+
+body {
+  @apply bg-bg text-white font-sans;
+}

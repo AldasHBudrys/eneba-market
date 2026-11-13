@@ -1,0 +1,21 @@
+# Decisions — one line each: choice — reason
+
+- Vite + React + TypeScript — required by the brief (TS preferred); Vite needs no build config.
+- React Router — standard client-side routing for the pages (store, product, cart, orders).
+- TanStack Query — handles fetching, caching, loading and error states, so components stay small.
+- Tailwind — fast to match Eneba's design; colors and font live in one config as tokens.
+- Zustand (cart) — tiny global store for cart state across pages, less boilerplate than Redux/Context.
+- Laravel (PHP 8.5) — brief asks for PHP; built-in migrations, seeders, validation and transactions mean less custom code.
+- REST under /api — simplest to build, test and explain; the brief allows REST or GraphQL.
+- Sanctum bearer tokens — Laravel's built-in API auth; tokens avoid cross-domain cookie issues between Vercel and Render.
+- Postgres on Neon — free tier that doesn't expire (Render's free Postgres is deleted after 30 days).
+- pg_trgm for fuzzy search — typo tolerance inside the DB, no separate search service to host.
+- Vercel /api rewrite — frontend calls same-origin /api, so no CORS setup and no hardcoded backend URL in the browser.
+- Render (Docker) for backend — free PHP hosting; Docker makes the PHP version explicit. Cold starts of ~30–60 s after idle are accepted.
+- Prices in integer cents — avoids float rounding errors in totals.
+- Laravel Herd for local PHP — already installed; bundles PHP 8.5, Composer and the Postgres driver.
+- Neon branches: `production` (Render) + `dev` (local, auto-delete off) — local `migrate:fresh` can never wipe live data.
+- Direct (non-pooled) Neon connection — migrations and a few connections don't need PgBouncer; avoids pooler quirks.
+- Local dev server = `php -S -t public` instead of `artisan serve` — Avast deletes Laravel's router script (false positive); the plain built-in server sends unknown paths to index.php anyway.
+- Composer via `--prefer-source` + custom CA bundle — Avast intercepts HTTPS and locks downloaded zips; changing antivirus settings is the user's call.
+- Dockerfile with `artisan serve` on Render — Linux container has no Avast; simplest way to run PHP on a free tier (shortcut noted in the file).
