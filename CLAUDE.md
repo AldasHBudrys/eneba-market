@@ -53,7 +53,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Store API: `/api/products` (q, platform, region, min/max_price in cents, 7 sorts, 24/page), `/api/products/{slug}`, `/api/filters`; typo search done (pg_trgm)
 
 **Day 2**
-- [ ] Store page
+- [x] Store page (`/store`: filters, sort, tags, pages; URL query = API params; Metropolis font)
 - [ ] Search (fuzzy, header autocomplete)
 - [ ] Product page with offers
 - [ ] Homepage blocks

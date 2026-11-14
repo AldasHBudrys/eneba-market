@@ -13,7 +13,7 @@ class StoreApiTest extends TestCase
     /**
      * Three products built to hit the edge cases:
      * - Witcher (Steam): cheap offer has NO keys, so its "From" price must be the 1500 offer, not 900.
-     * - Hollow Knight (Nintendo): one buyable offer at 700.
+     * - Hollow Knight (Nintendo): buyable offers at 700 and 1200, so its "From" price is 700.
      * - Stardew (Steam): only offer is sold out → price null, listed last.
      */
     protected function setUp(): void
@@ -28,7 +28,7 @@ class StoreApiTest extends TestCase
         $b = DB::table('sellers')->insertGetId(['name' => 'Seller B', 'rating' => 8.9]);
 
         $this->product('The Witcher 3: Wild Hunt', 'witcher', $steam, $global, 2999, [[$a, 1500, 2], [$b, 900, 0]], popularity: 10);
-        $this->product('Hollow Knight', 'hollow', $nintendo, $europe, 1499, [[$a, 700, 1]], popularity: 30);
+        $this->product('Hollow Knight', 'hollow', $nintendo, $europe, 1499, [[$a, 700, 1], [$b, 1200, 1]], popularity: 30);
         $this->product('Stardew Valley', 'stardew', $steam, $europe, 1399, [[$a, 500, 0]], popularity: 20);
     }
 
@@ -51,8 +51,11 @@ class StoreApiTest extends TestCase
     {
         $this->getJson('/api/products?platform=steam&sort=name_asc')->assertJsonPath('data.*.slug', ['stardew', 'witcher']);
         $this->getJson('/api/products?platform=steam,nintendo&region=europe&sort=name_asc')->assertJsonPath('data.*.slug', ['hollow', 'stardew']);
-        // 800–1600: Witcher's 1500 offer counts; its 900 offer has no stock; Stardew's 500 is sold out anyway
+        // Filters on the "From" price the card shows. 800–1600: Witcher's is 1500 (its 900 offer has no keys);
+        // Hollow is out even though its 1200 offer is in range, because its card says "From €7.00".
         $this->getJson('/api/products?min_price=800&max_price=1600')->assertJsonPath('data.*.slug', ['witcher']);
+        $this->getJson('/api/products?max_price=800')->assertJsonPath('data.*.slug', ['hollow']);
+        $this->getJson('/api/products?min_price=1600')->assertJsonPath('meta.total', 0); // sold-out Stardew never matches
     }
 
     public function test_search_handles_typos_and_partial_names(): void

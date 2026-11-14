@@ -37,10 +37,12 @@ class ProductController extends Controller
             ->when($term !== '', fn (Builder $q) => $q->search($term))
             ->when($input['platform'] ?? null, fn (Builder $q, $slugs) => $q->whereHas('platform', fn ($p) => $p->whereIn('slug', explode(',', $slugs))))
             ->when($input['region'] ?? null, fn (Builder $q, $slugs) => $q->whereHas('region', fn ($r) => $r->whereIn('slug', explode(',', $slugs))))
-            // "has an offer you can buy in this price range", not just "the cheapest offer is in range"
-            ->when($min !== null || $max !== null, fn (Builder $q) => $q->whereHas('offers', fn (Builder $o) => $o->inStock()
-                ->when($min !== null, fn ($o) => $o->where('price_cents', '>=', $min))
-                ->when($max !== null, fn ($o) => $o->where('price_cents', '<=', $max))));
+            // Match the "From" price the card shows (cheapest buyable offer): it must be in [min, max].
+            // = a buyable offer exists at <= max, and no buyable offer is cheaper than min.
+            ->when($max !== null, fn (Builder $q) => $q->whereHas('offers', fn (Builder $o) => $o->inStock()->where('price_cents', '<=', $max)))
+            ->when($min !== null, fn (Builder $q) => $q
+                ->whereHas('offers', fn (Builder $o) => $o->inStock())
+                ->whereDoesntHave('offers', fn (Builder $o) => $o->inStock()->where('price_cents', '<', $min)));
 
         $sort = $input['sort'] ?? null;
         if ($sort === null && $term !== '') {
