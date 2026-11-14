@@ -44,6 +44,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - Homepage renders only what the API sends. Nothing is hardcoded in the frontend.
 - Prices are integer cents everywhere (DB, API). Format only at display time.
 - Log each design decision as one line in `DECISIONS.md` (choice + reason).
+- Side issues found mid-feature go into `WANT_TO_FIX.md` (one table row), not into the current diff.
 
 ## Status (keep updated)
 **Day 1**
@@ -54,7 +55,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 
 **Day 2**
 - [x] Store page (`/store`: filters, sort, tags, pages; URL query = API params; Metropolis font)
-- [ ] Search (fuzzy, header autocomplete)
+- [x] Search (header SearchBox: 250 ms pause → top 5 from `/api/products?q=`, Enter → `/store?q=`)
 - [ ] Product page with offers
 - [ ] Homepage blocks
 - [ ] Eneba styling
