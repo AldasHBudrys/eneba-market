@@ -68,7 +68,7 @@ export default function SearchBox() {
         value={text}
         onChange={(e) => { setText(e.target.value); setOpen(true) }}
         onFocus={() => setOpen(true)}
-        className="h-11 w-full border border-white/50 bg-transparent px-10 font-semibold outline-none placeholder:text-muted focus:border-accent"
+        className="h-11 w-full border border-white/50 bg-surface-dark px-10 font-semibold outline-none placeholder:text-muted focus:border-accent"
       />
       {text && (
         <button type="button" aria-label="Clear search" onClick={() => { setText(''); close() }}

@@ -4,7 +4,7 @@ import { euro, type Product } from '../api'
 /** Eneba-style product tile: cover, platform, title, region, old price + discount, price. */
 export default function ProductCard({ product: p }: { product: Product }) {
   return (
-    <Link to={`/product/${p.slug}`} className="group flex flex-col bg-surface-dark transition hover:bg-surface">
+    <Link to={`/product/${p.slug}`} className="group flex flex-col bg-surface-dark shadow-black/40 transition hover:-translate-y-1 hover:shadow-lg">
       <img src={p.image_url} alt="" loading="lazy" className="aspect-[3/4] w-full object-cover" />
       <div className="flex flex-1 flex-col gap-1 p-3">
         <span className="text-xs text-muted">{p.platform.name}</span>

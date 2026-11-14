@@ -58,7 +58,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Search (header SearchBox: 250 ms pause → top 5 from `/api/products?q=`, Enter → `/store?q=`)
 - [x] Product page with offers (`/product/:slug`: featured = cheapest in stock, offer list, sold-out greyed, 404; Buy disabled until Day 3)
 - [x] Homepage blocks (`/api/homepage` + `/api/blocks/{banners,deals,bestsellers}`; frontend type→component map; rolling deals)
-- [ ] Eneba styling
+- [x] Eneba styling (side-by-side with eneba.com; purple header, focus outlines, card hover, footer, favicon, titles; WANT_TO_FIX #1 #3 fixed)
 
 **Day 3**
 - [ ] Auth

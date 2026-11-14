@@ -17,3 +17,9 @@
 body {
   @apply bg-bg text-white font-sans;
 }
+
+/* Keyboard users see where they are; mouse clicks don't get an outline (:focus-visible). */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

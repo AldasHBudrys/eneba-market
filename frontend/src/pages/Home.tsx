@@ -50,12 +50,13 @@ function BannerBlock({ title, endpoint }: BlockProps) {
   if (!banners.data) return <BlockState title={title} failed={banners.isError} />
   const [main, ...side] = banners.data
 
+  // The banner image already shows the title, so the overlay only adds the subtitle and a call to action.
   const tile = (b: Banner, big: boolean) => (
-    <Link key={b.title} to={b.link_url} className="group relative block overflow-hidden">
+    <Link key={b.title} to={b.link_url} aria-label={b.subtitle ? `${b.title}: ${b.subtitle}` : b.title} className="group relative block overflow-hidden">
       <img src={b.image_url} alt="" className={`w-full object-cover transition group-hover:scale-105 ${big ? 'aspect-[3/1]' : 'aspect-[3/1] md:aspect-auto md:h-full'}`} />
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-        <div className={`font-extrabold ${big ? 'text-2xl' : 'text-lg'}`}>{b.title}</div>
-        {b.subtitle && <div className="text-sm">{b.subtitle}</div>}
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-gradient-to-t from-black/80 to-transparent p-3">
+        {b.subtitle && <span className={`font-semibold ${big ? 'text-base' : 'text-sm'}`}>{b.subtitle}</span>}
+        {big && <span className="shrink-0 bg-accent px-4 py-1.5 text-sm font-extrabold text-black">Shop now</span>}
       </div>
     </Link>
   )

@@ -71,7 +71,7 @@ class CatalogSeeder extends Seeder
                     'description' => "$title for ".self::PLATFORMS[$platform].'. Redeem the key on '.self::PLATFORMS[$platform]
                         .' and the game is added to your library instantly. Region: '.self::REGIONS[$region].'.',
                     // shortcut: generated placeholder covers instead of real game art (copyright); swap for licensed images if this went live.
-                    'image_url' => 'https://placehold.co/460x600/1f0a4d/fad318/png?font=montserrat&text='.rawurlencode($title),
+                    'image_url' => 'https://placehold.co/460x600/351183/fad318/png?font=montserrat&text='.rawurlencode($title),
                     'platform_id' => $platformIds[$platform],
                     'region_id' => $regionIds[$region],
                     'genre' => $genre,

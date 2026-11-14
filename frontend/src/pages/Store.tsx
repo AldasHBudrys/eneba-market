@@ -70,6 +70,7 @@ export default function Store() {
 
   return (
     <div>
+      <title>{`${q ? `Results for "${q}"` : 'Store'} | eneba market`}</title>
       <h1 className="mb-6 text-3xl font-bold">{q ? `Results for "${q}"` : 'Store'}</h1>
 
       <div className="grid gap-6 md:grid-cols-[240px_1fr]">

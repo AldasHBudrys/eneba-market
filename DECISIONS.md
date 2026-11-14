@@ -44,3 +44,8 @@
 - Rolling deals: an ended deal's end moves forward by whole weeks (Deal::currentEnd) — seeded demo deals would all expire before grading; marked as a shortcut.
 - Best sellers = top 12 by popularity among in-stock products — a best seller you can't buy looks broken.
 - All homepage endpoints return {"data": [...]} — same shape as Laravel resources, one parsing path in the frontend.
+- Data fixes go in migrations, not re-seeds (e.g. lighter cover color) — the live DB only runs migrations on deploy; down() reverses it.
+- Header uses the page purple with a thin border, search box dark-filled — matches eneba.com (measured: header transparent over #4618AC); found in the side-by-side check.
+- Footer "For the Eneba internship task" — makes clear it's an assignment, not Eneba's site.
+- :focus-visible yellow outline everywhere — keyboard users can see focus on purple; mouse clicks don't get an outline.
+- Loading skeletons skipped (parked in WANT_TO_FIX #4) — nice-to-have; protects Day 3 time.
