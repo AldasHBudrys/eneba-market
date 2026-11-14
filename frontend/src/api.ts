@@ -39,6 +39,11 @@ export type Filters = {
   price: { min_cents: number; max_cents: number }
 }
 
+/** GET /api/homepage: which blocks the homepage shows, in order, and where each block loads from. */
+export type HomeBlock = { type: string; title: string | null; endpoint: string }
+export type Banner = { title: string; subtitle: string | null; image_url: string; link_url: string }
+export type Deal = { ends_at: string; product: Product }
+
 /** Carries the HTTP status so pages can tell "not found" (404) from "server down". */
 export class ApiError extends Error {
   status: number
@@ -48,9 +53,9 @@ export class ApiError extends Error {
   }
 }
 
-/** GET /api/{path} and parse JSON. Throws on non-2xx so TanStack Query shows the error state. */
+/** GET /api/{path} (or a full "/api/..." path the API sent us) and parse JSON. Throws on non-2xx so TanStack Query shows the error state. */
 export async function api<T>(path: string): Promise<T> {
-  const res = await fetch(`/api/${path}`, { headers: { Accept: 'application/json' } })
+  const res = await fetch(path.startsWith('/api/') ? path : `/api/${path}`, { headers: { Accept: 'application/json' } })
   if (!res.ok) throw new ApiError(res.status)
   return res.json()
 }

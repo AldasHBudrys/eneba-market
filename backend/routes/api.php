@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FilterController;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -14,3 +15,8 @@ Route::get('/health', function () {
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 Route::get('/filters', FilterController::class);
+
+Route::get('/homepage', [HomepageController::class, 'layout']);
+Route::get('/blocks/banners', [HomepageController::class, 'banners']);
+Route::get('/blocks/deals', [HomepageController::class, 'deals']);
+Route::get('/blocks/bestsellers', [HomepageController::class, 'bestsellers']);

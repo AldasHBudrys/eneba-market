@@ -39,3 +39,8 @@
 - Seller rating labels: ≥9.8 Superb, ≥9.5 Excellent, ≥9.0 Very good, else Good — matches Eneba's examples (9.91 Superb, 9.63 Excellent).
 - "Buy now" shown but disabled until the cart exists (Day 3) — layout stays final; graders see where buying happens.
 - 404 from the API isn't retried (TanStack retries other errors 3×) — a missing product won't appear on retry; shows "Product not found" immediately.
+- Homepage API: /api/homepage lists blocks (type, title, endpoint) by position; each block type has its own endpoint + source — the brief's "each block from its own backend source"; reordering is a data change, no deploy.
+- Frontend block map (type → component); unknown types are skipped — a new home_blocks row can't break the page.
+- Rolling deals: an ended deal's end moves forward by whole weeks (Deal::currentEnd) — seeded demo deals would all expire before grading; marked as a shortcut.
+- Best sellers = top 12 by popularity among in-stock products — a best seller you can't buy looks broken.
+- All homepage endpoints return {"data": [...]} — same shape as Laravel resources, one parsing path in the frontend.

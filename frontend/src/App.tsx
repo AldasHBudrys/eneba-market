@@ -1,6 +1,7 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 import Layout from './components/Layout'
 import NotFound from './components/NotFound'
+import Home from './pages/Home'
 import Product from './pages/Product'
 import Store from './pages/Store'
 
@@ -8,8 +9,7 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        {/* shortcut: "/" redirects to the store until the homepage exists (Day 2, feature 4) */}
-        <Route index element={<Navigate to="/store" replace />} />
+        <Route index element={<Home />} />
         <Route path="store" element={<Store />} />
         <Route path="product/:slug" element={<Product />} />
         <Route path="*" element={<NotFound />} />

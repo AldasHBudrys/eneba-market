@@ -57,7 +57,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Store page (`/store`: filters, sort, tags, pages; URL query = API params; Metropolis font)
 - [x] Search (header SearchBox: 250 ms pause → top 5 from `/api/products?q=`, Enter → `/store?q=`)
 - [x] Product page with offers (`/product/:slug`: featured = cheapest in stock, offer list, sold-out greyed, 404; Buy disabled until Day 3)
-- [ ] Homepage blocks
+- [x] Homepage blocks (`/api/homepage` + `/api/blocks/{banners,deals,bestsellers}`; frontend type→component map; rolling deals)
 - [ ] Eneba styling
 
 **Day 3**
