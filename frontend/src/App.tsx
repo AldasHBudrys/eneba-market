@@ -6,6 +6,7 @@ import { Login, Register } from './pages/Auth'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Home from './pages/Home'
+import Orders from './pages/Orders'
 import Product from './pages/Product'
 import Store from './pages/Store'
 
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="product/:slug" element={<Product />} />
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
+        <Route path="orders" element={<RequireAuth><Orders /></RequireAuth>} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="*" element={<NotFound />} />

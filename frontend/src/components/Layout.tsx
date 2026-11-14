@@ -62,6 +62,7 @@ function AccountLinks() {
     const logout = () => api('auth/logout', { method: 'POST' }).catch(() => {}).finally(clear)
     return (
       <span className="flex items-center gap-3">
+        <NavLink to="/orders" className={({ isActive }) => (isActive ? 'text-accent' : 'hover:text-accent')}>My orders</NavLink>
         <span>Hi, {user.name}</span>
         <button onClick={logout} className="hover:text-accent">Log out</button>
       </span>

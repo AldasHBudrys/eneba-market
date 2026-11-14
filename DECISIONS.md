@@ -64,3 +64,9 @@
 - Only the card's last 4 digits leave the browser (enough to simulate a decline on ...0002); card inputs autocomplete=off + "never enter a real card" notice — a real card typed by mistake never reaches the server.
 - Cart in the browser (Zustand persist), max 10 per line, capped at the stock seen when added — guests can fill it; the server re-checks stock at checkout.
 - "Buy now" adds that seller's offer and opens /cart (Eneba jumps to checkout) — lets the buyer review first.
+- Order history queries through $request->user()->orders() — other users' orders are never fetched, so there's no ownership check to forget.
+- One /orders page, no detail page — each order card already shows its items and keys.
+- Keys hidden until "Reveal" (UI only; the owner's API response contains the codes) — like Eneba, protects against shoulder-surfing.
+- Orders query keyed by user id — two people on one browser never see each other's cached keys.
+- Order::FOR_RESOURCE lists the eager-loaded relations once — checkout and order history can't drift apart, no N+1 queries.
+- No pagination on /api/orders (shortcut) — demo users have a handful of orders; paginate() when lists grow.

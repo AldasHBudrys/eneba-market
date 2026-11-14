@@ -140,7 +140,10 @@ function Done({ order }: { order: Order }) {
             </li>
           ))}
         </ul>
-        <Link to="/store" className="mt-6 inline-block font-bold text-accent hover:underline">Continue shopping</Link>
+        <div className="mt-6 flex flex-wrap gap-6">
+          <Link to="/orders" className="font-bold text-accent hover:underline">View in order history</Link>
+          <Link to="/store" className="font-bold text-accent hover:underline">Continue shopping</Link>
+        </div>
       </section>
     </div>
   )

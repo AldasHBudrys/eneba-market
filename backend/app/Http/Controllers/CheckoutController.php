@@ -69,7 +69,7 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        $order->load('items.offer.seller', 'items.offer.product.platform', 'items.offer.product.region', 'items.key');
+        $order->load(Order::FOR_RESOURCE);
 
         return (new OrderResource($order))->response()->setStatusCode(201);
     }
