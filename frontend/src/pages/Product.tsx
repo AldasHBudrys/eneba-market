@@ -1,17 +1,26 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { api, ApiError, euro, type Offer, type ProductDetail } from '../api'
+import { useCart } from '../cart'
 import NotFound from '../components/NotFound'
 
 /** Seller rating → Eneba-style label (their examples: 9.91 Superb, 9.63 Excellent). */
 const ratingLabel = (r: number) => (r >= 9.8 ? 'Superb' : r >= 9.5 ? 'Excellent' : r >= 9 ? 'Very good' : 'Good')
 const discount = (price: number, rrp: number) => Math.round(100 - (price * 100) / rrp)
 
-// Placeholder until the cart exists (Day 3): the button is in its final place but does nothing yet.
-function BuyButton({ wide = false }: { wide?: boolean }) {
+/** Adds this seller's offer to the cart and opens the cart (step 1 of checkout). */
+function BuyButton({ offer: o, product: p, wide = false }: { offer: Offer; product: ProductDetail; wide?: boolean }) {
+  const add = useCart((s) => s.add)
+  const navigate = useNavigate()
+  const buy = () => {
+    add({
+      offer_id: o.id, stock: o.stock, price_cents: o.price_cents, seller: o.seller.name,
+      product: { slug: p.slug, name: p.name, platform: p.platform.name, region: p.region.name, image_url: p.image_url },
+    })
+    navigate('/cart')
+  }
   return (
-    <button disabled title="Cart arrives on Day 3"
-      className={`bg-accent px-5 py-2 font-extrabold text-black disabled:cursor-not-allowed disabled:opacity-60 ${wide ? 'w-full py-3' : ''}`}>
+    <button onClick={buy} className={`bg-accent px-5 py-2 font-extrabold text-black hover:brightness-110 ${wide ? 'w-full py-3' : ''}`}>
       Buy now
     </button>
   )
@@ -72,7 +81,7 @@ export default function Product() {
               </div>
               <div className="mb-1 text-3xl font-extrabold">{euro(featured.price_cents)}</div>
               <div className="mb-4 text-sm text-muted">Sold by {featured.seller.name}</div>
-              <BuyButton wide />
+              <BuyButton offer={featured} product={p} wide />
               {others.length > 0 && (
                 <a href="#offers" className="mt-3 block text-center text-sm text-accent hover:underline">
                   +{others.length} {others.length === 1 ? 'offer' : 'offers'} from {euro(Math.min(...others.map((o) => o.price_cents)))}
@@ -88,7 +97,7 @@ export default function Product() {
       <section id="offers" className="mt-10">
         <h2 className="mb-3 text-xl font-bold">Offers ({p.offers.length})</h2>
         <ul className="flex flex-col gap-2">
-          {p.offers.map((o) => <OfferRow key={o.id} offer={o} rrp={p.rrp_cents} />)}
+          {p.offers.map((o) => <OfferRow key={o.id} offer={o} product={p} rrp={p.rrp_cents} />)}
         </ul>
       </section>
 
@@ -104,7 +113,7 @@ export default function Product() {
   )
 }
 
-function OfferRow({ offer: o, rrp }: { offer: Offer; rrp: number }) {
+function OfferRow({ offer: o, product, rrp }: { offer: Offer; product: ProductDetail; rrp: number }) {
   const soldOut = o.stock === 0
   return (
     <li className={`flex flex-wrap items-center gap-x-6 gap-y-2 bg-surface-dark p-4 ${soldOut ? 'opacity-50' : ''}`}>
@@ -117,7 +126,7 @@ function OfferRow({ offer: o, rrp }: { offer: Offer; rrp: number }) {
       </div>
       <div className="w-24 text-xl font-extrabold">{euro(o.price_cents)}</div>
       <div className="w-24 text-sm">{soldOut ? 'Sold out' : `${o.stock} in stock`}</div>
-      {soldOut ? <span className="w-[6.5rem]" /> : <BuyButton />}
+      {soldOut ? <span className="w-[6.5rem]" /> : <BuyButton offer={o} product={product} />}
     </li>
   )
 }

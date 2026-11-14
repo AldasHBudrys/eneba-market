@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\ProductController;
@@ -25,6 +26,7 @@ Route::middleware('throttle:6,1')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/checkout', CheckoutController::class);
 });
 
 Route::get('/homepage', [HomepageController::class, 'layout']);

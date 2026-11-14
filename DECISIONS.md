@@ -56,3 +56,11 @@
 - api() clears the session on any 401 — an expired/revoked token logs you out locally instead of failing silently.
 - Post-login redirect only to local paths (safeNext) — blocks open redirects like ?next=//evil.com.
 - Demo account demo@eneba-market.test (password in README) via an update-or-create seeder that runs on every deploy — graders can log in without registering.
+- Checkout = one DB transaction: lock keys (FOR UPDATE SKIP LOCKED) → order + items → simulated charge; any failure (stock, declined card) rolls back everything — no half-orders, no stuck reservations. Verified with two real DB sessions: B got the next key in 0.43 s while A held the first.
+- game_keys.order_item_id is UNIQUE — even a logic bug can't attach one key to two order items; the DB refuses.
+- One order_items row per key; price_cents copied at purchase — order history stays correct if prices change later.
+- No order status column — single-step payment means only paid orders exist.
+- Prices come from the DB at checkout; the browser sends only offer ids + quantities — a tampered request can't change what's charged.
+- Only the card's last 4 digits leave the browser (enough to simulate a decline on ...0002); card inputs autocomplete=off + "never enter a real card" notice — a real card typed by mistake never reaches the server.
+- Cart in the browser (Zustand persist), max 10 per line, capped at the stock seen when added — guests can fill it; the server re-checks stock at checkout.
+- "Buy now" adds that seller's offer and opens /cart (Eneba jumps to checkout) — lets the buyer review first.

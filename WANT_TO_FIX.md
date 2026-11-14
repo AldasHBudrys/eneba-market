@@ -8,6 +8,7 @@ Issues noticed along the way, parked so they don't grow the current feature's sc
 |---|---|---|---|---|
 | 2 | Header search keeps the typed text after clicking a dropdown result (it only syncs with `/store?q=`, so leaving a store page without `q` doesn't clear it) | `frontend/src/components/SearchBox.tsx` | Clear the box when a result is clicked, or decide that keeping it is fine (Eneba keeps it) | Product page check, Day 2 |
 | 4 | Loading states are plain "Loading…" text, not skeleton cards | Store grid, homepage rows, product page | A `ProductCardSkeleton` (grey blocks in the card's shape) shown while data loads | Styling plan, Day 2 (skipped on purpose to protect Day 3) |
+| 5 | The cart never re-checks stock, so a line whose keys sold out meanwhile stays until checkout says "Only 0 left" and you remove it yourself | `frontend/src/pages/Cart.tsx`, `cart.ts` | On the cart page, fetch current stock per offer and mark/cap sold-out lines | Checkout check, Day 3 |
 
 ## Fixed
 

@@ -46,6 +46,20 @@ export type HomeBlock = { type: string; title: string | null; endpoint: string }
 export type Banner = { title: string; subtitle: string | null; image_url: string; link_url: string }
 export type Deal = { ends_at: string; product: Product }
 
+/** An order as its owner sees it (backend OrderResource), including the bought key codes. */
+export type Order = {
+  id: number
+  total_cents: number
+  created_at: string
+  items: {
+    id: number
+    price_cents: number
+    seller: string
+    product: { slug: string; name: string; platform: string; region: string }
+    code: string
+  }[]
+}
+
 /** Carries the HTTP status so pages can tell "not found" (404) from "server down". */
 export class ApiError extends Error {
   status: number

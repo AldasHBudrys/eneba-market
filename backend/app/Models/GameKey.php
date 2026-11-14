@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GameKey extends Model
 {
-    /** The code is what the buyer pays for: never include it in JSON by accident. */
+    protected $fillable = ['order_item_id'];
+
+    /** The code is what the buyer pays for: never include it in JSON by accident (OrderResource adds it for the owner). */
     protected $hidden = ['code'];
 
     public function offer(): BelongsTo
@@ -19,6 +21,6 @@ class GameKey extends Model
     /** The single definition of "unsold" that stock, prices and checkout all use. */
     public function scopeUnsold(Builder $query): void
     {
-        // shortcut: no orders exist yet, so every key is unsold; Day 3 checkout changes this to whereNull('order_item_id').
+        $query->whereNull('order_item_id');
     }
 }

@@ -62,7 +62,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 
 **Day 3**
 - [x] Auth (register/login/logout/me, Sanctum 7-day tokens, rate limit + trustProxies, Zustand session in localStorage, demo account demo@eneba-market.test)
-- [ ] Cart / checkout / keys
+- [x] Cart / checkout / keys (browser cart, 3-step checkout, POST /api/checkout in one transaction with FOR UPDATE SKIP LOCKED, decline card ...0002, last-4-only)
 - [ ] Order history
 - [ ] Tests
 - [ ] README

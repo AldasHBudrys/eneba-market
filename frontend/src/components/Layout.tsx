@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { api } from '../api'
 import { useAuth } from '../auth'
+import { cartCount, useCart } from '../cart'
 import SearchBox from './SearchBox'
 
 /** Header on every page; the routed page renders in <Outlet />. */
@@ -20,6 +21,7 @@ export default function Layout() {
             <NavLink to="/store" className={({ isActive }) => (isActive ? 'text-accent' : 'hover:text-accent')}>
               Store
             </NavLink>
+            <CartLink />
             <AccountLinks />
           </nav>
         </div>
@@ -37,6 +39,16 @@ export default function Layout() {
         </div>
       </footer>
     </>
+  )
+}
+
+function CartLink() {
+  const count = useCart((s) => cartCount(s.items))
+  return (
+    <NavLink to="/cart" aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
+      className={({ isActive }) => (isActive ? 'text-accent' : 'hover:text-accent')}>
+      Cart{count > 0 && <span className="ml-1 bg-accent px-1.5 text-xs font-extrabold text-black">{count}</span>}
+    </NavLink>
   )
 }
 
