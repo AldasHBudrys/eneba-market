@@ -1,3 +1,5 @@
+import { useAuth } from './auth'
+
 // Types mirror the Laravel API Resources (backend/app/Http/Resources). Prices are integer cents.
 
 export type Named = { slug: string; name: string }
@@ -47,17 +49,33 @@ export type Deal = { ends_at: string; product: Product }
 /** Carries the HTTP status so pages can tell "not found" (404) from "server down". */
 export class ApiError extends Error {
   status: number
-  constructor(status: number) {
+  /** Laravel's per-field validation messages (422), e.g. { email: ["The email has already been taken."] }. */
+  errors: Record<string, string[]>
+  constructor(status: number, errors: Record<string, string[]> = {}) {
     super(`API ${status}`)
     this.status = status
+    this.errors = errors
   }
 }
 
-/** GET /api/{path} (or a full "/api/..." path the API sent us) and parse JSON. Throws on non-2xx so TanStack Query shows the error state. */
-export async function api<T>(path: string): Promise<T> {
-  const res = await fetch(path.startsWith('/api/') ? path : `/api/${path}`, { headers: { Accept: 'application/json' } })
-  if (!res.ok) throw new ApiError(res.status)
-  return res.json()
+/**
+ * Call /api/{path} (or a full "/api/..." path the API sent us) and parse JSON.
+ * Sends the login token when there is one. Throws ApiError on non-2xx so TanStack Query shows the error state.
+ */
+export async function api<T>(path: string, { method = 'GET', body }: { method?: string; body?: unknown } = {}): Promise<T> {
+  const token = useAuth.getState().token
+  const res = await fetch(path.startsWith('/api/') ? path : `/api/${path}`, {
+    method,
+    headers: {
+      Accept: 'application/json',
+      ...(body !== undefined && { 'Content-Type': 'application/json' }),
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+  if (res.status === 401 && token) useAuth.getState().clear() // token expired or was revoked: log out locally
+  if (!res.ok) throw new ApiError(res.status, (await res.json().catch(() => ({}))).errors)
+  return res.status === 204 ? (undefined as T) : res.json()
 }
 
 const eur = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' })

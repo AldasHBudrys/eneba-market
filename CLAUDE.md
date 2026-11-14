@@ -61,7 +61,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Eneba styling (side-by-side with eneba.com; purple header, focus outlines, card hover, footer, favicon, titles; WANT_TO_FIX #1 #3 fixed)
 
 **Day 3**
-- [ ] Auth
+- [x] Auth (register/login/logout/me, Sanctum 7-day tokens, rate limit + trustProxies, Zustand session in localStorage, demo account demo@eneba-market.test)
 - [ ] Cart / checkout / keys
 - [ ] Order history
 - [ ] Tests

@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => 60 * 24 * 7, // minutes: tokens expire after 7 days, then the user logs in again
 
     /*
     |--------------------------------------------------------------------------

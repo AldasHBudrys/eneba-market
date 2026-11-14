@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\ProductController;
@@ -15,6 +16,16 @@ Route::get('/health', function () {
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 Route::get('/filters', FilterController::class);
+
+// 6 attempts per minute per IP, against password guessing.
+Route::middleware('throttle:6,1')->group(function () {
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+});
 
 Route::get('/homepage', [HomepageController::class, 'layout']);
 Route::get('/blocks/banners', [HomepageController::class, 'banners']);

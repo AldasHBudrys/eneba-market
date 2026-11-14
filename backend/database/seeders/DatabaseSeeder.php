@@ -10,11 +10,14 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    // Runs on every deploy (Dockerfile), so every part must be safe to repeat.
     public function run(): void
     {
-        // Safe to run on every deploy: seeds only an empty database, never duplicates or overwrites real orders.
+        $this->call(DemoUserSeeder::class); // update-or-create: never duplicates
+
+        // The catalog only seeds an empty database, so it never duplicates or overwrites real orders.
         if (DB::table('products')->exists()) {
-            $this->command?->info('Products already exist, skipping seed.');
+            $this->command?->info('Products already exist, skipping catalog seed.');
 
             return;
         }

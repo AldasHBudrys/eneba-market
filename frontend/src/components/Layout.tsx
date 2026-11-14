@@ -1,4 +1,6 @@
-import { Link, NavLink, Outlet } from 'react-router'
+import { Link, NavLink, Outlet, useLocation } from 'react-router'
+import { api } from '../api'
+import { useAuth } from '../auth'
 import SearchBox from './SearchBox'
 
 /** Header on every page; the routed page renders in <Outlet />. */
@@ -14,10 +16,11 @@ export default function Layout() {
           <div className="order-last w-full md:order-none md:max-w-xl md:flex-1">
             <SearchBox />
           </div>
-          <nav className="ml-auto text-sm font-semibold md:ml-0">
+          <nav className="ml-auto flex items-center gap-4 text-sm font-semibold md:ml-0">
             <NavLink to="/store" className={({ isActive }) => (isActive ? 'text-accent' : 'hover:text-accent')}>
               Store
             </NavLink>
+            <AccountLinks />
           </nav>
         </div>
       </header>
@@ -34,5 +37,31 @@ export default function Layout() {
         </div>
       </footer>
     </>
+  )
+}
+
+/** "Log in | Register" or "Hi, name · Log out". Login links carry the current page as ?next= so you come back here. */
+function AccountLinks() {
+  const { user, clear } = useAuth()
+  const { pathname, search } = useLocation()
+
+  if (user) {
+    // Revoke the token on the server; log out locally even if that request fails (e.g. offline).
+    const logout = () => api('auth/logout', { method: 'POST' }).catch(() => {}).finally(clear)
+    return (
+      <span className="flex items-center gap-3">
+        <span>Hi, {user.name}</span>
+        <button onClick={logout} className="hover:text-accent">Log out</button>
+      </span>
+    )
+  }
+
+  const next = ['/login', '/register'].includes(pathname) ? '' : `?next=${encodeURIComponent(pathname + search)}`
+  return (
+    <span>
+      <Link to={`/login${next}`} className="hover:text-accent">Log in</Link>
+      <span className="px-1.5 text-muted">|</span>
+      <Link to={`/register${next}`} className="hover:text-accent">Register</Link>
+    </span>
   )
 }

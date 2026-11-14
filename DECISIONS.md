@@ -49,3 +49,10 @@
 - Footer "For the Eneba internship task" — makes clear it's an assignment, not Eneba's site.
 - :focus-visible yellow outline everywhere — keyboard users can see focus on purple; mouse clicks don't get an outline.
 - Loading skeletons skipped (parked in WANT_TO_FIX #4) — nice-to-have; protects Day 3 time.
+- Sanctum bearer tokens, 7-day expiry; logout revokes only the current token — tokens are stored hashed; other devices stay logged in.
+- Login error is the same for unknown email and wrong password — doesn't reveal which emails have accounts.
+- Register/login rate limit 6/min per IP + trustProxies('*') — behind Vercel + Render every request looks like the proxy's IP; trusting X-Forwarded-For gives each visitor their own limit (spoofable: noted shortcut).
+- Token in localStorage via Zustand persist — survives refresh; readable by injected scripts (acceptable for a demo, noted in README).
+- api() clears the session on any 401 — an expired/revoked token logs you out locally instead of failing silently.
+- Post-login redirect only to local paths (safeNext) — blocks open redirects like ?next=//evil.com.
+- Demo account demo@eneba-market.test (password in README) via an update-or-create seeder that runs on every deploy — graders can log in without registering.

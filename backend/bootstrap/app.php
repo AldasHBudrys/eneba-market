@@ -13,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Requests arrive via Vercel's rewrite + Render's proxy; read the visitor's IP from X-Forwarded-For
+        // so the login rate limit counts each visitor, not "the proxy".
+        // shortcut: trusting every proxy lets a client fake that header to dodge the limit; list Render's proxy IPs if this went live.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
