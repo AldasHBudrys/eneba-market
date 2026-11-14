@@ -35,3 +35,7 @@
 - Tests on a separate Neon "test" branch, skipped unless .env.testing has a DB_URL — tests wipe their DB; Laravel would otherwise fall back to .env (dev).
 - Metropolis font via @fontsource/metropolis — Eneba's font; self-hosted from npm, no Google Fonts (it isn't there) or CDN dependency.
 - Search results live on the store page (/store?q=…), no separate search page — same as Eneba; one page handles search + filters.
+- Featured offer = cheapest offer in stock — Eneba features a "Verified by Eneba" seller; we have no verification concept.
+- Seller rating labels: ≥9.8 Superb, ≥9.5 Excellent, ≥9.0 Very good, else Good — matches Eneba's examples (9.91 Superb, 9.63 Excellent).
+- "Buy now" shown but disabled until the cart exists (Day 3) — layout stays final; graders see where buying happens.
+- 404 from the API isn't retried (TanStack retries other errors 3×) — a missing product won't appear on retry; shows "Product not found" immediately.
