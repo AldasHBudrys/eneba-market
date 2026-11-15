@@ -95,6 +95,7 @@ function Footer() {
         </Column>
         <Column title="About">
           <li><a href="https://github.com/AldasHBudrys/eneba-market" className={linkClass}>Source code on GitHub</a></li>
+          <li><span className="text-xs leading-[18px] text-soft">Game images © their publishers, via Steam</span></li>
         </Column>
       </div>
     </footer>

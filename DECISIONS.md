@@ -70,3 +70,8 @@
 - Orders query keyed by user id — two people on one browser never see each other's cached keys.
 - Order::FOR_RESOURCE lists the eager-loaded relations once — checkout and order history can't drift apart, no N+1 queries.
 - No pagination on /api/orders (shortcut) — demo users have a handful of orders; paginate() when lists grow.
+- Real covers: Steam's official 600x900 library art for 23 of 28 games (app ids looked up via Steam's store search API, each URL checked to return the right game's JPEG); credited "Game images © their publishers, via Steam" in the footer. Linked, not downloaded or rehosted.
+- Zelda, Mario Kart, Minecraft (not on Steam) and FC 26, FM 26 (no public portrait URL) keep the styled title placeholder — 8 of 70 products.
+- Covers applied by a data migration (use_steam_covers), seeder updated for fresh DBs — same pattern as the cover-color fix; the live DB updates on deploy, down() restores placeholders.
+- <Cover> component swaps a failed image to the title placeholder once — Steam can change URLs; cards never show a broken-image icon.
+- Cards stay 3:4 (Eneba's shape); 2:3 Steam covers are centre-cropped (~11 % top/bottom).

@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { euro } from '../api'
 import { cartTotal, MAX_QUANTITY, useCart } from '../cart'
+import Cover from '../components/Cover'
 import Steps from '../components/Steps'
 
 /** Step 1: review the cart. Anyone can use it; "Proceed to checkout" asks for login (RequireAuth on /checkout). */
@@ -24,7 +25,7 @@ export default function Cart() {
             <ul className="flex flex-col gap-3">
               {items.map((i) => (
                 <li key={i.offer_id} className="flex flex-wrap items-center gap-4 bg-surface p-3">
-                  <img src={i.product.image_url} alt="" className="h-20 w-15 object-cover" />
+                  <Cover src={i.product.image_url} name={i.product.name} className="h-20 w-15" />
                   <div className="min-w-48 flex-1">
                     <div className="text-xs text-muted">Sold by {i.seller}</div>
                     <Link to={`/product/${i.product.slug}`} className="font-bold hover:underline">

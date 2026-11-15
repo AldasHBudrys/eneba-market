@@ -16,6 +16,17 @@ class CatalogSeeder extends Seeder
 
     private const SELLERS = [['PixelVault', 9.91], ['KeyForge', 9.84], ['GameNest', 9.63], ['LootLane', 9.12], ['CodeCrate', 8.74], ['NordicKeys', 9.47]];
 
+    // Steam app ids for the official 600x900 covers (same list as the use_steam_covers migration, which updates existing DBs).
+    // Games not listed have no Steam portrait cover and get a title placeholder.
+    private const STEAM_APP_IDS = [
+        'The Witcher 3: Wild Hunt' => 292030, 'Cyberpunk 2077' => 1091500, 'Elden Ring' => 1245620, "Baldur's Gate 3" => 1086940,
+        'Red Dead Redemption 2' => 1174180, 'Grand Theft Auto V' => 3240220, 'Hogwarts Legacy' => 990080, 'Terraria' => 105600,
+        'Stardew Valley' => 413150, 'Hades' => 1145360, 'Hollow Knight' => 367520, 'Celeste' => 504230,
+        'Farming Simulator 25' => 2300320, 'Forza Horizon 5' => 1551360, "Assassin's Creed Valhalla" => 2208920, 'Starfield' => 1716740,
+        'It Takes Two' => 1426210, 'Sea of Thieves' => 1172620, 'Mortal Kombat 1' => 1971870, 'Resident Evil 4' => 2050650,
+        'Lies of P' => 1627720, 'Ghost of Tsushima' => 2215430, 'Hitman World of Assassination' => 1659040,
+    ];
+
     // [title, genre, release date, RRP in cents, platforms it's sold on]
     private const GAMES = [
         ['The Witcher 3: Wild Hunt', 'RPG', '2015-05-19', 2999, ['steam', 'gog', 'xbox', 'playstation']],
@@ -70,8 +81,10 @@ class CatalogSeeder extends Seeder
                     'slug' => Str::slug("$title $platform $region"),
                     'description' => "$title for ".self::PLATFORMS[$platform].'. Redeem the key on '.self::PLATFORMS[$platform]
                         .' and the game is added to your library instantly. Region: '.self::REGIONS[$region].'.',
-                    // shortcut: generated placeholder covers instead of real game art (copyright); swap for licensed images if this went live.
-                    'image_url' => 'https://placehold.co/460x600/351183/fad318/png?font=montserrat&text='.rawurlencode($title),
+                    // Official Steam cover (publishers' promo art, credited in the footer); title placeholder if the game has none.
+                    'image_url' => isset(self::STEAM_APP_IDS[$title])
+                        ? 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/'.self::STEAM_APP_IDS[$title].'/library_600x900.jpg'
+                        : 'https://placehold.co/460x600/351183/fad318/png?font=montserrat&text='.rawurlencode($title),
                     'platform_id' => $platformIds[$platform],
                     'region_id' => $regionIds[$region],
                     'genre' => $genre,

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router'
 import { api, ApiError, euro, type Offer, type ProductDetail } from '../api'
 import { useCart } from '../cart'
+import Cover from '../components/Cover'
 import NotFound from '../components/NotFound'
 
 /** Seller rating → Eneba-style label (their examples: 9.91 Superb, 9.63 Excellent). */
@@ -61,7 +62,7 @@ export default function Product() {
       </nav>
 
       <div className="grid gap-6 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr_320px]">
-        <img src={p.image_url} alt={p.name} className="aspect-[3/4] w-full max-w-xs object-cover" />
+        <Cover src={p.image_url} name={p.name} alt={p.name} className="aspect-[3/4] w-full max-w-xs" />
 
         <div>
           <h1 className="text-2xl font-bold md:text-3xl">{title}</h1>

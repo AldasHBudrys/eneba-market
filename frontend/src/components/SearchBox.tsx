@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { api, euro, type Page, type Product } from '../api'
+import Cover from './Cover'
 
 const MIN_CHARS = 2
 const PREVIEW = 5
@@ -97,7 +98,7 @@ export default function SearchBox() {
                 {results.data.data.slice(0, PREVIEW).map((p) => (
                   <li key={p.slug}>
                     <Link to={`/product/${p.slug}`} onClick={close} className="flex items-center gap-3 p-2 hover:bg-surface-light focus:bg-surface-light">
-                      <img src={p.image_url} alt="" className="h-14 w-10 shrink-0 object-cover" />
+                      <Cover src={p.image_url} name={p.name} className="h-14 w-10 shrink-0" />
                       <span className="flex-1 text-sm font-semibold">
                         {p.name} {p.platform.name} Key {p.region.name.toUpperCase()}
                       </span>
