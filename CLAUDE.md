@@ -69,5 +69,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra B: real game covers (Steam art for 23 games via data migration, <Cover> fallback, footer credit)
 - [x] Extra C: Add to cart + Buy now on product cards (cheapest_offer in list APIs, shared toCartItem)
 - [x] Extras: bigger yellow logo mark; homepage banners use Steam hero art
+- [x] Extra D: WANT_TO_FIX #5 — cart re-checks stock + price (/api/offers), lowers qty, blocks on sold out
 - [ ] README
 - [ ] Chat log export

@@ -1,12 +1,13 @@
 import { Link } from 'react-router'
 import { euro } from '../api'
-import { cartTotal, MAX_QUANTITY, useCart } from '../cart'
+import { cartTotal, MAX_QUANTITY, useCart, useLiveCart } from '../cart'
 import Cover from '../components/Cover'
 import Steps from '../components/Steps'
 
 /** Step 1: review the cart. Anyone can use it; "Proceed to checkout" asks for login (RequireAuth on /checkout). */
 export default function Cart() {
   const { items, setQuantity, remove } = useCart()
+  const { notes, blocked } = useLiveCart() // current stock + price from the server
 
   return (
     <div>
@@ -22,27 +23,37 @@ export default function Cart() {
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <section className="bg-surface-dark p-4">
             <h1 className="mb-4 text-xl font-bold">My cart</h1>
+            <CartNotes notes={notes} />
             <ul className="flex flex-col gap-3">
-              {items.map((i) => (
-                <li key={i.offer_id} className="flex flex-wrap items-center gap-4 bg-surface p-3">
-                  <Cover src={i.product.image_url} name={i.product.name} className="h-20 w-15" />
-                  <div className="min-w-48 flex-1">
-                    <div className="text-xs text-muted">Sold by {i.seller}</div>
-                    <Link to={`/product/${i.product.slug}`} className="font-bold hover:underline">
-                      {i.product.name} {i.product.platform} Key {i.product.region.toUpperCase()}
-                    </Link>
-                  </div>
-                  <div className="flex items-center" role="group" aria-label={`Quantity of ${i.product.name}`}>
-                    <button onClick={() => setQuantity(i.offer_id, i.quantity - 1)} disabled={i.quantity <= 1} aria-label="Decrease quantity"
-                      className="size-8 bg-surface-dark font-bold disabled:opacity-40">−</button>
-                    <span className="w-8 text-center font-bold">{i.quantity}</span>
-                    <button onClick={() => setQuantity(i.offer_id, i.quantity + 1)} disabled={i.quantity >= Math.min(i.stock, MAX_QUANTITY)}
-                      aria-label="Increase quantity" className="size-8 bg-surface-dark font-bold disabled:opacity-40">+</button>
-                  </div>
-                  <div className="w-24 text-right text-lg font-extrabold">{euro(i.price_cents * i.quantity)}</div>
-                  <button onClick={() => remove(i.offer_id)} aria-label={`Remove ${i.product.name}`} className="text-muted hover:text-accent">✕</button>
-                </li>
-              ))}
+              {items.map((i) => {
+                const soldOut = i.stock === 0
+                return (
+                  <li key={i.offer_id} className="flex flex-wrap items-center gap-4 bg-surface p-3">
+                    <Cover src={i.product.image_url} name={i.product.name} className={`h-20 w-15 ${soldOut ? 'opacity-40' : ''}`} />
+                    <div className={`min-w-48 flex-1 ${soldOut ? 'opacity-60' : ''}`}>
+                      <div className="text-xs text-muted">Sold by {i.seller}</div>
+                      <Link to={`/product/${i.product.slug}`} className="font-bold hover:underline">
+                        {i.product.name} {i.product.platform} Key {i.product.region.toUpperCase()}
+                      </Link>
+                    </div>
+                    {soldOut ? (
+                      <span className="font-bold text-accent">Sold out: remove to continue</span>
+                    ) : (
+                      <>
+                        <div className="flex items-center" role="group" aria-label={`Quantity of ${i.product.name}`}>
+                          <button onClick={() => setQuantity(i.offer_id, i.quantity - 1)} disabled={i.quantity <= 1} aria-label="Decrease quantity"
+                            className="size-8 bg-surface-dark font-bold disabled:opacity-40">−</button>
+                          <span className="w-8 text-center font-bold">{i.quantity}</span>
+                          <button onClick={() => setQuantity(i.offer_id, i.quantity + 1)} disabled={i.quantity >= Math.min(i.stock, MAX_QUANTITY)}
+                            aria-label="Increase quantity" className="size-8 bg-surface-dark font-bold disabled:opacity-40">+</button>
+                        </div>
+                        <div className="w-24 text-right text-lg font-extrabold">{euro(i.price_cents * i.quantity)}</div>
+                      </>
+                    )}
+                    <button onClick={() => remove(i.offer_id)} aria-label={`Remove ${i.product.name}`} className="text-muted hover:text-accent">✕</button>
+                  </li>
+                )
+              })}
             </ul>
           </section>
 
@@ -52,10 +63,25 @@ export default function Cart() {
               <span>Total</span>
               <span>{euro(cartTotal(items))}</span>
             </div>
-            <Link to="/checkout" className="block bg-accent py-3 text-center font-extrabold text-black">Proceed to checkout</Link>
+            {blocked ? (
+              <p className="bg-surface py-3 text-center text-sm font-bold">Remove sold-out items to continue</p>
+            ) : (
+              <Link to="/checkout" className="block bg-accent py-3 text-center font-extrabold text-black">Proceed to checkout</Link>
+            )}
           </aside>
         </div>
       )}
+    </div>
+  )
+}
+
+/** "Your cart was updated" notice after the server check changed something. Shared with checkout. */
+export function CartNotes({ notes }: { notes: string[] }) {
+  if (notes.length === 0) return null
+  return (
+    <div role="status" className="mb-4 border border-accent/60 bg-surface p-3 text-sm">
+      <b>Your cart was updated:</b>
+      <ul className="mt-1 list-disc pl-5">{notes.map((n) => <li key={n}>{n}</li>)}</ul>
     </div>
   )
 }

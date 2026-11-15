@@ -2,12 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate } from 'react-router'
 import { api, ApiError, euro, type Order } from '../api'
-import { cartTotal, useCart } from '../cart'
+import { cartTotal, useCart, useLiveCart } from '../cart'
 import Steps from '../components/Steps'
+import { CartNotes } from './Cart'
 
 /** Steps 2 + 3: simulated payment, then the bought keys. Only reachable logged in (RequireAuth). */
 export default function Checkout() {
   const { items, clear } = useCart()
+  const { notes, blocked } = useLiveCart() // re-check stock + price before paying (hooks must run before any early return)
   const queryClient = useQueryClient()
   const [cardErrors, setCardErrors] = useState<Record<string, string>>({})
 
@@ -50,6 +52,12 @@ export default function Checkout() {
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <form onSubmit={onSubmit} noValidate className="bg-surface-dark p-5">
           <h1 className="text-xl font-bold">Payment</h1>
+          <div className="mt-3"><CartNotes notes={notes} /></div>
+          {blocked && (
+            <p role="alert" className="mt-3 font-semibold text-accent">
+              Some items sold out. <Link to="/cart" className="underline">Remove them in your cart</Link> to pay.
+            </p>
+          )}
           <p className="mb-5 mt-2 bg-surface p-3 text-sm">
             <b>Demo only: never enter a real card.</b> Use <code>4242 4242 4242 4242</code>, any future date and any CVC.
             A card ending in <code>0002</code> is declined.
@@ -61,7 +69,7 @@ export default function Checkout() {
             <CardField name="name" label="Name on card" placeholder="Ada Lovelace" error={cardErrors.name} wide />
           </div>
           {serverError && <p role="alert" className="mt-4 font-semibold text-accent">{serverError}</p>}
-          <button disabled={pay.isPending} className="mt-5 w-full bg-accent py-3 font-extrabold text-black disabled:opacity-60">
+          <button disabled={pay.isPending || blocked} className="mt-5 w-full bg-accent py-3 font-extrabold text-black disabled:opacity-60">
             {pay.isPending ? 'Processing…' : `Pay ${euro(cartTotal(items))}`}
           </button>
         </form>
@@ -72,7 +80,7 @@ export default function Checkout() {
             {items.map((i) => (
               <li key={i.offer_id} className="flex justify-between gap-3">
                 <span>{i.quantity}× {i.product.name} <span className="text-muted">({i.product.platform})</span></span>
-                <span className="font-bold">{euro(i.price_cents * i.quantity)}</span>
+                <span className="font-bold">{i.stock === 0 ? <span className="text-accent">Sold out</span> : euro(i.price_cents * i.quantity)}</span>
               </li>
             ))}
           </ul>

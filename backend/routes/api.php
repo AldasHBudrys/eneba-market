@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ Route::get('/health', function () {
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 Route::get('/filters', FilterController::class);
+Route::get('/offers', [OfferController::class, 'index']);
 
 // 6 attempts per minute per IP, against password guessing.
 Route::middleware('throttle:6,1')->group(function () {

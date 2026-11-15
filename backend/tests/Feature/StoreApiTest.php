@@ -86,6 +86,34 @@ class StoreApiTest extends TestCase
         $this->getJson('/api/products?q=_')->assertOk()->assertJsonPath('meta.total', 0);
     }
 
+    public function test_offers_endpoint_returns_current_price_and_stock(): void
+    {
+        $witcher = DB::table('offers')->where('price_cents', 1500)->value('id'); // 2 keys
+        $soldOut = DB::table('offers')->where('price_cents', 500)->value('id');  // Stardew, 0 keys
+
+        $this->getJson("/api/offers?ids=$soldOut,$witcher,999999") // unknown id is simply left out
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.*.id', [$witcher, $soldOut]) // ordered by id
+            ->assertJsonPath('data.0.stock', 2)
+            ->assertJsonPath('data.0.price_cents', 1500)
+            ->assertJsonPath('data.1.stock', 0);
+
+        // A key sold elsewhere lowers the stock the cart sees.
+        $key = DB::table('game_keys')->where('offer_id', $witcher)->value('id');
+        $order = DB::table('orders')->insertGetId(['user_id' => \App\Models\User::create(['name' => 'X', 'email' => 'x@example.test', 'password' => 'secret123'])->id, 'total_cents' => 1500]);
+        $item = DB::table('order_items')->insertGetId(['order_id' => $order, 'offer_id' => $witcher, 'price_cents' => 1500]);
+        DB::table('game_keys')->where('id', $key)->update(['order_item_id' => $item]);
+        $this->getJson("/api/offers?ids=$witcher")->assertJsonPath('data.0.stock', 1);
+    }
+
+    public function test_offers_endpoint_rejects_bad_ids(): void
+    {
+        foreach (['', 'abc', '1,,2', '1;drop table offers', implode(',', range(1, 21))] as $bad) {
+            $this->getJson('/api/offers?ids='.urlencode($bad))->assertUnprocessable();
+        }
+    }
+
     public function test_health_check_reports_database_connected(): void
     {
         // Render polls this to decide whether the app is up.
