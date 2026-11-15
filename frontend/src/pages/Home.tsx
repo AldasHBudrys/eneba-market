@@ -2,9 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { api, type Banner, type Deal, type HomeBlock, type Product } from '../api'
+import Cover from '../components/Cover'
 import ProductCard from '../components/ProductCard'
 
 type BlockProps = { title: string | null; endpoint: string }
+
+const bannerPlaceholder = (title: string) => `https://placehold.co/1200x400/4618ac/fad318/png?font=montserrat&text=${encodeURIComponent(title)}`
 
 /** Block type (from the API) → component. A type missing here is skipped, so new rows in home_blocks can't break the page. */
 const BLOCKS: Record<string, (props: BlockProps) => ReactNode> = {
@@ -50,12 +53,16 @@ function BannerBlock({ title, endpoint }: BlockProps) {
   if (!banners.data) return <BlockState title={title} failed={banners.isError} />
   const [main, ...side] = banners.data
 
-  // The banner image already shows the title, so the overlay only adds the subtitle and a call to action.
+  // Banner art is plain artwork (no logo text), so the overlay carries the title, subtitle and call to action.
   const tile = (b: Banner, big: boolean) => (
     <Link key={b.title} to={b.link_url} aria-label={b.subtitle ? `${b.title}: ${b.subtitle}` : b.title} className="group relative block overflow-hidden">
-      <img src={b.image_url} alt="" className={`w-full object-cover transition group-hover:scale-105 ${big ? 'aspect-[3/1]' : 'aspect-[3/1] md:aspect-auto md:h-full'}`} />
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-gradient-to-t from-black/80 to-transparent p-3">
-        {b.subtitle && <span className={`font-semibold ${big ? 'text-base' : 'text-sm'}`}>{b.subtitle}</span>}
+      <Cover src={b.image_url} name={b.title} fallback={bannerPlaceholder(b.title)}
+        className={`w-full transition group-hover:scale-105 ${big ? 'aspect-[3/1]' : 'aspect-[3/1] md:aspect-auto md:h-full'}`} />
+      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-10">
+        <div>
+          <div className={`font-extrabold ${big ? 'text-3xl' : 'text-xl'}`}>{b.title}</div>
+          {b.subtitle && <div className={`font-semibold ${big ? 'text-base' : 'text-sm'}`}>{b.subtitle}</div>}
+        </div>
         {big && <span className="shrink-0 bg-accent px-4 py-1.5 text-sm font-extrabold text-black">Shop now</span>}
       </div>
     </Link>

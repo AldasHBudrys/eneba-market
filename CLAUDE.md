@@ -68,5 +68,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra A: header + footer match eneba.com measurements (1200 px width, 147 px two-row header, nav band, footer columns)
 - [x] Extra B: real game covers (Steam art for 23 games via data migration, <Cover> fallback, footer credit)
 - [x] Extra C: Add to cart + Buy now on product cards (cheapest_offer in list APIs, shared toCartItem)
+- [x] Extras: bigger yellow logo mark; homepage banners use Steam hero art
 - [ ] README
 - [ ] Chat log export

@@ -16,11 +16,12 @@ class HomepageSeeder extends Seeder
             ['type' => 'bestsellers', 'title' => 'Best sellers', 'position' => 3],
         ]);
 
-        $banner = fn (string $text) => 'https://placehold.co/1200x400/4618ac/fad318/png?font=montserrat&text='.rawurlencode($text);
+        // Steam's wide hero art (no logo text on it); same URLs as the use_banner_art migration, which updates existing DBs.
+        $banner = fn (int $steamAppId) => "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/$steamAppId/library_hero.jpg";
         DB::table('banners')->insert([
-            ['title' => 'Elden Ring', 'subtitle' => 'Rise, Tarnished — now up to 60% off', 'image_url' => $banner('Elden Ring'), 'link_url' => '/store?q=elden+ring', 'position' => 1],
-            ['title' => 'Steam games', 'subtitle' => 'Thousands of keys, delivered instantly', 'image_url' => $banner('Steam games'), 'link_url' => '/store?platform=steam', 'position' => 2],
-            ['title' => 'Nintendo eShop', 'subtitle' => 'Switch hits for less', 'image_url' => $banner('Nintendo'), 'link_url' => '/store?platform=nintendo', 'position' => 3],
+            ['title' => 'Elden Ring', 'subtitle' => 'Rise, Tarnished — now up to 60% off', 'image_url' => $banner(1245620), 'link_url' => '/store?q=elden+ring', 'position' => 1],
+            ['title' => 'Steam games', 'subtitle' => 'Thousands of keys, delivered instantly', 'image_url' => $banner(1091500), 'link_url' => '/store?platform=steam', 'position' => 2],
+            ['title' => 'Nintendo eShop', 'subtitle' => 'Switch hits for less', 'image_url' => $banner(367520), 'link_url' => '/store?platform=nintendo', 'position' => 3],
         ]);
 
         // One edition (the first seeded) of six well-known games, each deal ending a different number of days from now.

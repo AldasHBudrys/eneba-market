@@ -81,3 +81,4 @@
 - Buttons over the cover's bottom edge, fade in on hover/keyboard focus, always shown on touch screens (hover: none) — no layout jump, no empty strip.
 - "Add to cart" checks the quantity really increased ("Max in cart" at the stock/10 cap) instead of always claiming "Added".
 - Header logo: own yellow rounded mark with a purple "e" (logo.svg), 52 px, bigger than the 22 px word mark — the purple favicon square vanished on the purple header; favicon stays purple (works on light browser tabs).
+- Banners: Steam wide hero art via data migration (use_banner_art) — Elden Ring, Cyberpunk 2077 for "Steam games", Hollow Knight (sold on Nintendo here) for "Nintendo eShop"; hero art has no logo text, so the overlay shows title + subtitle again; <Cover fallback> swaps a failed banner to a wide placeholder.
