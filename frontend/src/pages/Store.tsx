@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import type { FormEvent } from 'react'
 import { useSearchParams } from 'react-router'
-import { api, euro, type Filters, type Page, type Product } from '../api'
+import { api, euro, filtersQuery, type Page, type Product } from '../api'
 import ProductCard from '../components/ProductCard'
 
 const SORTS = [
@@ -22,7 +22,7 @@ export default function Store() {
   const [params, setParams] = useSearchParams()
   const q = params.get('q')
 
-  const filters = useQuery({ queryKey: ['filters'], queryFn: () => api<Filters>('filters'), staleTime: Infinity })
+  const filters = useQuery(filtersQuery)
   const products = useQuery({
     queryKey: ['products', params.toString()],
     queryFn: () => api<Page<Product>>(`products?${params}`),

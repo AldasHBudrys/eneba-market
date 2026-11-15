@@ -92,6 +92,9 @@ export async function api<T>(path: string, { method = 'GET', body }: { method?: 
   return res.status === 204 ? (undefined as T) : res.json()
 }
 
+/** Platforms, regions and price range. Shared by the store sidebar, header nav and footer: same key = one request, cached. */
+export const filtersQuery = { queryKey: ['filters'], queryFn: () => api<Filters>('filters'), staleTime: Infinity }
+
 const eur = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' })
 
 /** 1729 → "€17.29". The only place cents become euros. */

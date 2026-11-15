@@ -55,7 +55,7 @@ export default function SearchBox() {
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && close()} // focus left the search box and its dropdown
       onKeyDown={(e) => e.key === 'Escape' && close()}
     >
-      <svg aria-hidden viewBox="0 0 24 24" className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 fill-none stroke-current stroke-2">
+      <svg aria-hidden viewBox="0 0 24 24" className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 fill-none stroke-current stroke-2">
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5" />
       </svg>
@@ -68,11 +68,11 @@ export default function SearchBox() {
         value={text}
         onChange={(e) => { setText(e.target.value); setOpen(true) }}
         onFocus={() => setOpen(true)}
-        className="h-11 w-full border border-white/50 bg-surface-dark px-10 font-semibold outline-none placeholder:text-muted focus:border-accent"
+        className="h-[57px] w-full border border-white/70 bg-transparent px-12 text-[19px] font-extrabold outline-none placeholder:text-muted focus:border-accent"
       />
       {text && (
         <button type="button" aria-label="Clear search" onClick={() => { setText(''); close() }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-lg leading-none hover:text-accent">
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-xl leading-none hover:text-accent">
           ✕
         </button>
       )}

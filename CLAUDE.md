@@ -65,5 +65,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Cart / checkout / keys (browser cart, 3-step checkout, POST /api/checkout in one transaction with FOR UPDATE SKIP LOCKED, decline card ...0002, last-4-only)
 - [x] Order history (`GET /api/orders` own orders only; `/orders` page with Reveal + Copy; header "My orders")
 - [x] Tests (25 backend tests; concurrency proven with two DB sessions; local + live manual sweep; results in PROGRESS.md)
+- [x] Extra A: header + footer match eneba.com measurements (1200 px width, 147 px two-row header, nav band, footer columns)
 - [ ] README
 - [ ] Chat log export

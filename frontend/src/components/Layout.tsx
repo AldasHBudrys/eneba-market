@@ -1,44 +1,112 @@
+import { useQuery } from '@tanstack/react-query'
+import type { ReactNode } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { api } from '../api'
+import { api, filtersQuery } from '../api'
 import { useAuth } from '../auth'
 import { cartCount, useCart } from '../cart'
 import SearchBox from './SearchBox'
 
-/** Header on every page; the routed page renders in <Outlet />. */
+/** Eneba's measured layout width: 1200 px of content + 20 px padding on each side. Shared by header, page and footer. */
+const CONTAINER = 'mx-auto w-full max-w-[1240px] px-5'
+
+/** Header (two rows, like eneba.com), the routed page in <Outlet />, footer. */
 export default function Layout() {
   return (
     <>
-      <header className="border-b border-white/10">{/* Eneba's header is the page purple, not a dark bar */}
-        {/* phones: logo + nav on the first row, search wraps to a full-width second row */}
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-          <Link to="/" className="text-2xl font-extrabold tracking-tight">
-            eneba<span className="text-accent">.</span>market
-          </Link>
-          <div className="order-last w-full md:order-none md:max-w-xl md:flex-1">
+      <header>
+        {/* Row 1: 20 px padding + 57 px row (search box height) = Eneba's 97 px. Phones: search wraps to its own row. */}
+        <div className={`${CONTAINER} flex flex-wrap items-center gap-x-6 gap-y-3 py-5`}>
+          <Logo />
+          <div className="order-last w-full md:order-none md:max-w-[550px] md:flex-1">
             <SearchBox />
           </div>
-          <nav className="ml-auto flex items-center gap-4 text-sm font-semibold md:ml-0">
-            <NavLink to="/store" className={({ isActive }) => (isActive ? 'text-accent' : 'hover:text-accent')}>
-              Store
-            </NavLink>
+          <nav aria-label="Account" className="ml-auto flex items-center gap-4 text-sm font-semibold">
             <CartLink />
             <AccountLinks />
           </nav>
         </div>
+        <PlatformNav />
       </header>
-      <main className="mx-auto min-h-[70vh] max-w-7xl px-4 py-6">
+      <main className={`${CONTAINER} min-h-[70vh] py-6`}>
         <Outlet />
       </main>
-      <footer className="mt-16 bg-surface-dark">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm">
-          <div>
-            <Link to="/" className="text-lg font-extrabold">eneba<span className="text-accent">.</span>market</Link>
-            <p className="mt-1 text-muted">For the Eneba internship task</p>
-          </div>
-          <Link to="/store" className="font-semibold hover:text-accent">Store</Link>
-        </div>
-      </footer>
+      <Footer />
     </>
+  )
+}
+
+function Logo({ small = false }: { small?: boolean }) {
+  return (
+    <Link to="/" className={`flex items-center gap-2 font-extrabold tracking-tight ${small ? 'text-lg' : 'text-[26px]'}`}>
+      <img src="/favicon.svg" alt="" className={small ? 'size-8' : 'size-12'} />
+      <span>eneba<span className="text-accent">.</span>market</span>
+    </Link>
+  )
+}
+
+/** Row 2: full-width darker band (Eneba: 50 px, black 25 %), links 16 px / 600. Platforms come from the API, not code. */
+function PlatformNav() {
+  const filters = useQuery(filtersQuery)
+  const { pathname, search } = useLocation()
+  const current = pathname === '/store' ? (new URLSearchParams(search).get('platform') ?? '') : null
+  const link = (active: boolean) => `flex h-full shrink-0 items-center px-3 hover:text-accent ${active ? 'text-accent' : ''}`
+
+  return (
+    <nav aria-label="Platforms" className="h-[50px] bg-black/25 text-base font-semibold">
+      {/* Phones: scrolls sideways instead of wrapping (the page itself never scrolls sideways). */}
+      <div className={`${CONTAINER} flex h-full items-stretch overflow-x-auto whitespace-nowrap`}>
+        <Link to="/store" className={`-ml-3 ${link(current === '')}`}>Store</Link>
+        {filters.data?.platforms.map((p) => (
+          <Link key={p.slug} to={`/store?platform=${p.slug}`} className={link(current === p.slug)}>{p.name}</Link>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
+function Footer() {
+  const filters = useQuery(filtersQuery)
+  const user = useAuth((s) => s.user)
+  const linkClass = 'text-xs leading-[18px] text-soft hover:text-white' // Eneba: 12 px, #DCD8E6, 18 px line height
+
+  return (
+    <footer className="mt-16 bg-black/70">{/* Eneba: black 70 % over the page purple */}
+      <div className={`${CONTAINER} grid gap-8 pb-[50px] pt-5 sm:grid-cols-[1.5fr_1fr_1fr_1fr]`}>
+        <div>
+          <Logo small />
+          <p className="mt-2 text-xs text-soft">For the Eneba internship task</p>
+        </div>
+        <Column title="Shop">
+          <li><Link to="/store" className={linkClass}>Store</Link></li>
+          {filters.data?.platforms.map((p) => (
+            <li key={p.slug}><Link to={`/store?platform=${p.slug}`} className={linkClass}>{p.name}</Link></li>
+          ))}
+        </Column>
+        <Column title="Account">
+          <li><Link to="/cart" className={linkClass}>Cart</Link></li>
+          {user ? (
+            <li><Link to="/orders" className={linkClass}>My orders</Link></li>
+          ) : (
+            <>
+              <li><Link to="/login" className={linkClass}>Log in</Link></li>
+              <li><Link to="/register" className={linkClass}>Register</Link></li>
+            </>
+          )}
+        </Column>
+        <Column title="About">
+          <li><a href="https://github.com/AldasHBudrys/eneba-market" className={linkClass}>Source code on GitHub</a></li>
+        </Column>
+      </div>
+    </footer>
+  )
+}
+
+function Column({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div>
+      <h2 className="mb-2 text-sm font-bold">{title}</h2>
+      <ul className="flex flex-col gap-1">{children}</ul>
+    </div>
   )
 }
 
@@ -69,9 +137,10 @@ function AccountLinks() {
     )
   }
 
+  // Eneba: 15 px / 800 for Log in | Register
   const next = ['/login', '/register'].includes(pathname) ? '' : `?next=${encodeURIComponent(pathname + search)}`
   return (
-    <span>
+    <span className="text-[15px] font-extrabold">
       <Link to={`/login${next}`} className="hover:text-accent">Log in</Link>
       <span className="px-1.5 text-muted">|</span>
       <Link to={`/register${next}`} className="hover:text-accent">Register</Link>
