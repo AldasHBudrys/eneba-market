@@ -72,6 +72,18 @@ class StoreApiTest extends TestCase
         $this->getJson('/api/products?min_price=1600')->assertJsonPath('meta.total', 0); // sold-out Stardew never matches
     }
 
+    public function test_facet_counts_follow_other_filters_but_ignore_their_own_group(): void
+    {
+        $facets = fn (string $query) => $this->getJson("/api/products?$query")->assertOk()->json('facets');
+
+        $this->assertEquals(['platform' => ['steam' => 2, 'nintendo' => 1], 'region' => ['global' => 1, 'europe' => 2]], $facets(''));
+        // Ticking Steam narrows the region counts, but platform counts stay as if nothing in that group was ticked.
+        $this->assertEquals(['platform' => ['steam' => 2, 'nintendo' => 1], 'region' => ['global' => 1, 'europe' => 1]], $facets('platform=steam'));
+        // Search and price narrow every group; options with no matches are left out.
+        $this->assertEquals(['platform' => ['steam' => 1], 'region' => ['global' => 1]], $facets('q=wichter'));
+        $this->assertEquals(['platform' => ['nintendo' => 1], 'region' => ['europe' => 1]], $facets('max_price=800'));
+    }
+
     public function test_search_handles_typos_and_partial_names(): void
     {
         $this->getJson('/api/products?q=wichter')->assertJsonPath('data.*.slug', ['witcher']);

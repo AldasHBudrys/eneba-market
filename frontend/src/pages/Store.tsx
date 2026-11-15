@@ -91,13 +91,20 @@ export default function Store() {
           {(['platform', 'region'] as const).map((key) => (
             <fieldset key={key}>
               <legend className="mb-2 font-bold">{key === 'platform' ? 'Platforms' : 'Regions'}</legend>
-              {filters.data?.[`${key}s`].map((option) => (
-                <label key={option.slug} className="flex cursor-pointer items-center gap-2 py-1 text-sm">
-                  <input type="checkbox" className="size-4 accent-accent" checked={selected(key).includes(option.slug)}
-                    onChange={() => toggle(key, option.slug)} />
-                  {option.name}
-                </label>
-              ))}
+              {filters.data?.[`${key}s`].map((option) => {
+                const checked = selected(key).includes(option.slug)
+                // Counts ignore this group's own ticks (see the API), so they say what ticking this option would add.
+                const count = products.data?.facets ? (products.data.facets[key][option.slug] ?? 0) : undefined
+                const empty = count === 0 && !checked // a ticked option stays clickable so it can be unticked
+                return (
+                  <label key={option.slug} className={`flex items-center gap-2 py-1 text-sm ${empty ? 'cursor-not-allowed text-muted opacity-50' : 'cursor-pointer'}`}>
+                    <input type="checkbox" className="size-4 accent-accent" checked={checked} disabled={empty}
+                      onChange={() => toggle(key, option.slug)} />
+                    {option.name}
+                    {count !== undefined && <span className="ml-auto text-xs text-muted">{count}</span>}
+                  </label>
+                )
+              })}
             </fieldset>
           ))}
         </aside>

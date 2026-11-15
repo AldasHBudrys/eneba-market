@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
 use App\Models\Offer;
+use App\Models\Platform;
 use App\Models\Product;
+use App\Models\Region;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -28,20 +30,7 @@ class ProductController extends Controller
             'page' => ['nullable', 'integer', 'min:1'],
         ]);
         $term = trim($input['q'] ?? '');
-        $min = $input['min_price'] ?? null;
-        $max = $input['max_price'] ?? null;
-
-        $query = Product::query()
-            ->forCard()
-            ->when($term !== '', fn (Builder $q) => $q->search($term))
-            ->when($input['platform'] ?? null, fn (Builder $q, $slugs) => $q->whereHas('platform', fn ($p) => $p->whereIn('slug', explode(',', $slugs))))
-            ->when($input['region'] ?? null, fn (Builder $q, $slugs) => $q->whereHas('region', fn ($r) => $r->whereIn('slug', explode(',', $slugs))))
-            // Match the "From" price the card shows (cheapest buyable offer): it must be in [min, max].
-            // = a buyable offer exists at <= max, and no buyable offer is cheaper than min.
-            ->when($max !== null, fn (Builder $q) => $q->whereHas('offers', fn (Builder $o) => $o->inStock()->where('price_cents', '<=', $max)))
-            ->when($min !== null, fn (Builder $q) => $q
-                ->whereHas('offers', fn (Builder $o) => $o->inStock())
-                ->whereDoesntHave('offers', fn (Builder $o) => $o->inStock()->where('price_cents', '<', $min)));
+        $query = $this->filtered($input, null)->forCard();
 
         $sort = $input['sort'] ?? null;
         if ($sort === null && $term !== '') {
@@ -59,7 +48,45 @@ class ProductController extends Controller
         };
         $query->orderBy('id'); // tie-breaker: without it equal rows can swap between pages
 
-        return ProductResource::collection($query->paginate(self::PER_PAGE)->withQueryString());
+        return ProductResource::collection($query->paginate(self::PER_PAGE)->withQueryString())
+            ->additional(['facets' => [
+                'platform' => $this->counts($input, 'platform', Platform::class),
+                'region' => $this->counts($input, 'region', Region::class),
+            ]]);
+    }
+
+    /**
+     * Products matching every filter in $input except the $except group. Facet counts skip their own group,
+     * so ticking "Steam" doesn't zero out GOG: the counts say what you'd get by adding that option.
+     */
+    private function filtered(array $input, ?string $except): Builder
+    {
+        $term = trim($input['q'] ?? '');
+        $min = $input['min_price'] ?? null;
+        $max = $input['max_price'] ?? null;
+        $slugs = fn (string $group) => $group === $except ? null : ($input[$group] ?? null);
+
+        return Product::query()
+            ->when($term !== '', fn (Builder $q) => $q->search($term))
+            ->when($slugs('platform'), fn (Builder $q, $s) => $q->whereHas('platform', fn ($p) => $p->whereIn('slug', explode(',', $s))))
+            ->when($slugs('region'), fn (Builder $q, $s) => $q->whereHas('region', fn ($r) => $r->whereIn('slug', explode(',', $s))))
+            // Match the "From" price the card shows (cheapest buyable offer): it must be in [min, max].
+            // = a buyable offer exists at <= max, and no buyable offer is cheaper than min.
+            ->when($max !== null, fn (Builder $q) => $q->whereHas('offers', fn (Builder $o) => $o->inStock()->where('price_cents', '<=', $max)))
+            ->when($min !== null, fn (Builder $q) => $q
+                ->whereHas('offers', fn (Builder $o) => $o->inStock())
+                ->whereDoesntHave('offers', fn (Builder $o) => $o->inStock()->where('price_cents', '<', $min)));
+    }
+
+    /** {slug: product count} for one filter group; options with no matches are left out (the frontend reads them as 0). */
+    private function counts(array $input, string $group, string $model): array
+    {
+        // Grouped by the foreign key, not joined: a join would make the search's unqualified `name` ambiguous.
+        $byId = $this->filtered($input, $group)->toBase()
+            ->selectRaw("{$group}_id as id, count(*) as n")->groupBy("{$group}_id")->pluck('n', 'id');
+        $slugs = $model::whereIn('id', $byId->keys())->pluck('slug', 'id');
+
+        return $byId->mapWithKeys(fn ($n, $id) => [$slugs[$id] => (int) $n])->all();
     }
 
     /** GET /api/products/{slug}: details + every seller's offer, buyable ones first, cheapest first. */

@@ -35,6 +35,8 @@ export type ProductDetail = Product & {
 export type Page<T> = {
   data: T[]
   meta: { current_page: number; last_page: number; total: number }
+  /** Only on /api/products: {slug: matching products} per filter group; a missing slug means 0. */
+  facets?: Record<'platform' | 'region', Record<string, number>>
 }
 
 export type Filters = {

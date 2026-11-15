@@ -72,5 +72,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra D: WANT_TO_FIX #5 — cart re-checks stock + price (/api/offers), lowers qty, blocks on sold out
 - [x] Extra E: WANT_TO_FIX #4 — loading skeletons (store, homepage, product, orders)
 - [x] Extra F: WANT_TO_FIX #2 — search box clears after picking a result (WANT_TO_FIX now empty)
+- [x] Extra G: filter counts next to each platform/region (facets in /api/products, 0 = greyed out)
 - [ ] README
 - [ ] Chat log export
