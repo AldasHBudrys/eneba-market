@@ -65,6 +65,19 @@ class StoreApiTest extends TestCase
         $this->getJson('/api/products?q=zzzz')->assertJsonPath('meta.total', 0);
     }
 
+    public function test_search_treats_sql_wildcards_as_plain_text(): void
+    {
+        // % and _ mean "anything" in SQL LIKE. Unescaped, q=% would match every product.
+        $this->getJson('/api/products?q=%25')->assertOk()->assertJsonPath('meta.total', 0);
+        $this->getJson('/api/products?q=_')->assertOk()->assertJsonPath('meta.total', 0);
+    }
+
+    public function test_health_check_reports_database_connected(): void
+    {
+        // Render polls this to decide whether the app is up.
+        $this->getJson('/api/health')->assertOk()->assertExactJson(['status' => 'ok', 'db' => 'connected']);
+    }
+
     public function test_product_page_lists_buyable_offers_first_and_hides_key_codes(): void
     {
         $response = $this->getJson('/api/products/witcher')

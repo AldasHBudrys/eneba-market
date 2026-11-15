@@ -1,6 +1,6 @@
 # Progress so far — what was done, why, and how it fits together
 
-Status: Days 1 and 2 of 3 done. Live at https://eneba-market.vercel.app: homepage, store, typo-tolerant search, product page. Day 3 next: auth, cart/checkout/keys, order history, tests, README, chat log.
+Status: all features built and live at https://eneba-market.vercel.app; test sweep done. Left: README, chat log, submission.
 
 ## The big picture
 
@@ -146,6 +146,38 @@ Commits: `5d96415` store → `f4e1b70` search → `7edc92e` product page → `e0
 - **Why:** "looks and feels like Eneba" is a grading point.
 - **Done:** side-by-side screenshots vs eneba.com, then: header in the page purple with a dark search box (as measured on Eneba), yellow `:focus-visible` outline, card hover lift, footer "For the Eneba internship task", favicon, page titles.
 - **WANT_TO_FIX #1 fixed** with a data migration (covers recolored `#1f0a4d` → `#351183`; the live DB only runs migrations on deploy, `down()` reverses it). **#3 fixed:** banner overlay shows subtitle + "Shop now" (the title is already in the image). **#4 parked:** loading skeletons, skipped to protect Day 3.
+
+---
+
+# Day 3: auth, buying, testing
+
+Auth, cart → checkout → keys, and order history are built and live (details and reasons in `DECISIONS.md`). Test sweep results:
+
+## Automated (backend, Neon `test` branch): 25 tests, 126 assertions, all passing
+| File | Tests | What it proves |
+|---|---|---|
+| `StoreApiTest` | 9 | filters, 7 sorts, "From" price = cheapest buyable offer, price filter matches that price, typo search, SQL wildcards treated as text, product page offer order, no key codes leak, 404/422, health check |
+| `HomepageApiTest` | 4 | block order from `position`, banners, rolling deals, best sellers skip sold-out |
+| `AuthApiTest` | 5 | register (password hashed), duplicate email, login, same error for unknown email / wrong password, logout revokes token, rate limit → 429 |
+| `CheckoutApiTest` | 5 | keys assigned with DB prices, two checkouts never get the same key, over-stock and declined card roll back everything, login + validation |
+| `OrderApiTest` | 2 | only your own orders, newest first; logged out → 401 |
+
+Mutation check: with the search escaping removed, `q=%` matched all products and the wildcard test failed; restored, it passes.
+
+## Concurrency (two real DB sessions; PHPUnit can't run two at once)
+Session A runs checkout's key query (`FOR UPDATE SKIP LOCKED`) and keeps its transaction open; session B runs the same query meanwhile:
+`A locked key 1 … B got key 2 after 0.43 s` (second run: `0.13 s`). B never waits and never gets A's key. A committed demo script was dropped because Avast flags/blocks it (false positive).
+
+## Manual, local (`dev`)
+- Fully sold-out product (bought all Celeste/Steam/Europe keys): featured box "Sold out", no Buy buttons, all offers greyed, store card "Sold out" and last in price sort.
+- Unknown homepage block type (`mystery` row): API sends it, page skips it, no console errors.
+- API down: homepage, store and product page show their error + Retry after ~7 s (TanStack's 3 retries); Retry recovers once the API is back.
+- Full purchase flow, decline card, "Only N left", order history Reveal/Copy, phone width on all pages.
+- `dev` reset with `migrate:fresh --seed` afterwards.
+
+## Manual, live site (no login)
+Homepage blocks + ticking countdown, "wichter 3" → 4 Witcher editions, Nintendo + price sort ascending, product page offers, guest cart, `/checkout` and `/orders` → login redirect, API 401s for checkout/orders, phone width, no console errors.
+Live purchase with the demo account: done by hand by the user (no passwords typed into production by the agent).
 
 ---
 
