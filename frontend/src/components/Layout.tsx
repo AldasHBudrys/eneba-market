@@ -37,8 +37,9 @@ export default function Layout() {
 
 function Logo({ small = false }: { small?: boolean }) {
   return (
-    <Link to="/" className={`flex items-center gap-2 font-extrabold tracking-tight ${small ? 'text-lg' : 'text-[26px]'}`}>
-      <img src="/favicon.svg" alt="" className={small ? 'size-8' : 'size-12'} />
+    <Link to="/" className={`flex items-center gap-2.5 font-extrabold tracking-tight ${small ? 'text-base' : 'text-[22px]'}`}>
+      {/* Yellow mark (the purple favicon disappeared on the purple header); bigger than the word mark, like Eneba's icon. */}
+      <img src="/logo.svg" alt="" className={small ? 'size-9' : 'size-13'} />
       <span>eneba<span className="text-accent">.</span>market</span>
     </Link>
   )

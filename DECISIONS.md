@@ -80,3 +80,4 @@
 - Card = box with two links + a separate button bar (no buttons inside links: invalid HTML, bad for screen readers); image link removed from tab order to avoid a duplicate stop.
 - Buttons over the cover's bottom edge, fade in on hover/keyboard focus, always shown on touch screens (hover: none) — no layout jump, no empty strip.
 - "Add to cart" checks the quantity really increased ("Max in cart" at the stock/10 cap) instead of always claiming "Added".
+- Header logo: own yellow rounded mark with a purple "e" (logo.svg), 52 px, bigger than the 22 px word mark — the purple favicon square vanished on the purple header; favicon stays purple (works on light browser tabs).
