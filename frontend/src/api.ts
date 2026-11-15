@@ -13,6 +13,8 @@ export type Product = {
   rrp_cents: number
   price_cents: number | null // null = sold out
   discount_percent: number | null
+  /** List endpoints only: the offer behind the "From" price (what card buttons add). null = sold out. */
+  cheapest_offer?: { id: number; seller: { name: string }; stock: number } | null
 }
 
 export type Offer = {

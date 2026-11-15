@@ -32,8 +32,7 @@ class ProductController extends Controller
         $max = $input['max_price'] ?? null;
 
         $query = Product::query()
-            ->with(['platform', 'region'])
-            ->withLowestPrice()
+            ->forCard()
             ->when($term !== '', fn (Builder $q) => $q->search($term))
             ->when($input['platform'] ?? null, fn (Builder $q, $slugs) => $q->whereHas('platform', fn ($p) => $p->whereIn('slug', explode(',', $slugs))))
             ->when($input['region'] ?? null, fn (Builder $q, $slugs) => $q->whereHas('region', fn ($r) => $r->whereIn('slug', explode(',', $slugs))))

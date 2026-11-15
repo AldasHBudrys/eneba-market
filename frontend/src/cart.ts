@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { Product } from './api'
 
 export const MAX_QUANTITY = 10
 
@@ -44,5 +45,17 @@ export const useCart = create<CartState>()(
   ),
 )
 
-export const cartTotal = (items: CartItem[]) => items.reduce((sum, i) => sum + i.price_cents * i.quantity, 0)
+/** Builds a cart line from a product + one of its offers. Shared by the product page and the card buttons. */
+export const toCartItem = (
+  p: Product,
+  o: { id: number; seller: { name: string }; stock: number; price_cents: number },
+): Omit<CartItem, 'quantity'> => ({
+  offer_id: o.id,
+  stock: o.stock,
+  price_cents: o.price_cents,
+  seller: o.seller.name,
+  product: { slug: p.slug, name: p.name, platform: p.platform.name, region: p.region.name, image_url: p.image_url },
+})
+
+export const cartTotal =(items: CartItem[]) => items.reduce((sum, i) => sum + i.price_cents * i.quantity, 0)
 export const cartCount = (items: CartItem[]) => items.reduce((sum, i) => sum + i.quantity, 0)

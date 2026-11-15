@@ -73,16 +73,22 @@ class HomepageApiTest extends TestCase
             ['product_id' => $this->soldOut, 'ends_at' => '2026-11-10 12:00:00', 'position' => 3], // 10 days ago: +2 weeks
         ]);
 
-        $this->getJson('/api/blocks/deals')
+        $deals = $this->getJson('/api/blocks/deals')
             ->assertJsonPath('data.*.product.slug', ['popular', 'quiet', 'sold-out'])
             ->assertJsonPath('data.0.ends_at', '2026-11-22T12:00:00+00:00')
             ->assertJsonPath('data.1.ends_at', '2026-11-27T11:00:00+00:00')
             ->assertJsonPath('data.2.ends_at', '2026-11-24T12:00:00+00:00')
-            ->assertJsonPath('data.0.product.price_cents', 1000);
+            ->assertJsonPath('data.0.product.price_cents', 1000)
+            ->assertJsonPath('data.0.product.cheapest_offer.seller.name', 'Seller');
+
+        $this->assertArrayHasKey('cheapest_offer', $deals->json('data.2.product')); // sold-out deal: present and null → no buttons
+        $this->assertNull($deals->json('data.2.product.cheapest_offer'));
     }
 
     public function test_bestsellers_are_most_popular_first_and_skip_sold_out(): void
     {
-        $this->getJson('/api/blocks/bestsellers')->assertJsonPath('data.*.slug', ['popular', 'quiet']);
+        $this->getJson('/api/blocks/bestsellers')
+            ->assertJsonPath('data.*.slug', ['popular', 'quiet'])
+            ->assertJsonPath('data.0.cheapest_offer.stock', 2); // cards on the homepage can add to cart too
     }
 }

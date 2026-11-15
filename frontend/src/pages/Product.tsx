@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router'
 import { api, ApiError, euro, type Offer, type ProductDetail } from '../api'
-import { useCart } from '../cart'
+import { toCartItem, useCart } from '../cart'
 import Cover from '../components/Cover'
 import NotFound from '../components/NotFound'
 
@@ -14,10 +14,7 @@ function BuyButton({ offer: o, product: p, wide = false }: { offer: Offer; produ
   const add = useCart((s) => s.add)
   const navigate = useNavigate()
   const buy = () => {
-    add({
-      offer_id: o.id, stock: o.stock, price_cents: o.price_cents, seller: o.seller.name,
-      product: { slug: p.slug, name: p.name, platform: p.platform.name, region: p.region.name, image_url: p.image_url },
-    })
+    add(toCartItem(p, o))
     navigate('/cart')
   }
   return (

@@ -67,5 +67,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Tests (25 backend tests; concurrency proven with two DB sessions; local + live manual sweep; results in PROGRESS.md)
 - [x] Extra A: header + footer match eneba.com measurements (1200 px width, 147 px two-row header, nav band, footer columns)
 - [x] Extra B: real game covers (Steam art for 23 games via data migration, <Cover> fallback, footer credit)
+- [x] Extra C: Add to cart + Buy now on product cards (cheapest_offer in list APIs, shared toCartItem)
 - [ ] README
 - [ ] Chat log export

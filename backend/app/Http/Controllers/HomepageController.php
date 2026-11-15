@@ -36,7 +36,7 @@ class HomepageController extends Controller
     /** GET /api/blocks/deals */
     public function deals()
     {
-        $deals = Deal::with(['product' => fn ($p) => $p->with(['platform', 'region'])->withLowestPrice()])
+        $deals = Deal::with(['product' => fn ($p) => $p->forCard()])
             ->orderBy('position')
             ->get();
 
@@ -50,8 +50,7 @@ class HomepageController extends Controller
     public function bestsellers()
     {
         return ProductResource::collection(Product::query()
-            ->with(['platform', 'region'])
-            ->withLowestPrice()
+            ->forCard()
             ->whereHas('offers', fn (Builder $o) => $o->inStock())
             ->orderByDesc('popularity')
             ->orderBy('id')

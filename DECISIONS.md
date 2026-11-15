@@ -75,3 +75,8 @@
 - Covers applied by a data migration (use_steam_covers), seeder updated for fresh DBs — same pattern as the cover-color fix; the live DB updates on deploy, down() restores placeholders.
 - <Cover> component swaps a failed image to the title placeholder once — Steam can change URLs; cards never show a broken-image icon.
 - Cards stay 3:4 (Eneba's shape); 2:3 Steam covers are centre-cropped (~11 % top/bottom).
+- Card buttons add the offer behind the card's "From" price (Product::cheapestOffer, Laravel one-of-many: cheapest in-stock, ties → lowest id) — card price = cart price; sold-out cards get no buttons.
+- forCard() scope = everything a card needs (platform, region, price, cheapest offer + seller + stock) — one place for the store, deals and best-seller queries; one extra query per page, not per card.
+- Card = box with two links + a separate button bar (no buttons inside links: invalid HTML, bad for screen readers); image link removed from tab order to avoid a duplicate stop.
+- Buttons over the cover's bottom edge, fade in on hover/keyboard focus, always shown on touch screens (hover: none) — no layout jump, no empty strip.
+- "Add to cart" checks the quantity really increased ("Max in cart" at the stock/10 cap) instead of always claiming "Added".

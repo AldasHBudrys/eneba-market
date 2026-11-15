@@ -42,6 +42,20 @@ class StoreApiTest extends TestCase
             ->assertJsonPath('data.2.price_cents', null);
     }
 
+    public function test_cards_get_the_offer_behind_the_from_price(): void
+    {
+        $offerAt = fn (int $price) => DB::table('offers')->where('price_cents', $price)->value('id');
+
+        $response = $this->getJson('/api/products?sort=price_asc')
+            ->assertJsonPath('data.1.slug', 'witcher')
+            ->assertJsonPath('data.1.cheapest_offer', ['id' => $offerAt(1500), 'seller' => ['name' => 'Seller A'], 'stock' => 2]) // not the keyless 900 offer
+            ->assertJsonPath('data.0.cheapest_offer.id', $offerAt(700)); // Hollow: 700 beats 1200
+
+        // Stardew is sold out: the key must be present AND null (assertJsonPath alone also passes when the key is missing).
+        $this->assertArrayHasKey('cheapest_offer', $response->json('data.2'));
+        $this->assertNull($response->json('data.2.cheapest_offer'));
+    }
+
     public function test_default_sort_is_most_popular(): void
     {
         $this->getJson('/api/products')->assertJsonPath('data.*.slug', ['hollow', 'stardew', 'witcher']);

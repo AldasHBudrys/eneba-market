@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -30,6 +31,22 @@ class Product extends Model
     public function offers(): HasMany
     {
         return $this->hasMany(Offer::class);
+    }
+
+    /**
+     * The offer behind the card's "From" price: cheapest offer with stock (ties: lowest id, so it's stable).
+     * Laravel's "one of many" relation picks one related row per product in a single query.
+     */
+    public function cheapestOffer(): HasOne
+    {
+        return $this->hasOne(Offer::class)->ofMany(['price_cents' => 'min', 'id' => 'min'], fn (Builder $offer) => $offer->inStock());
+    }
+
+    /** Everything a product card needs (list endpoints): platform, region, "From" price and the offer behind it. */
+    public function scopeForCard(Builder $query): void
+    {
+        $query->with(['platform', 'region', 'cheapestOffer' => fn ($offer) => $offer->withStock()->with('seller')])
+            ->withLowestPrice();
     }
 
     /** Partial ("witch") or typo ("wichter") name match. word_similarity scores the term against the best-matching part of the name. */

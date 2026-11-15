@@ -21,6 +21,12 @@ class ProductResource extends JsonResource
             'rrp_cents' => $this->rrp_cents,
             'price_cents' => $price, // null = sold out
             'discount_percent' => $price === null ? null : (int) round(100 - $price * 100 / $this->rrp_cents),
+            // List cards: the offer behind "From" price, so the card's buttons add exactly that offer. null = sold out.
+            'cheapest_offer' => $this->whenLoaded('cheapestOffer', fn () => $this->cheapestOffer ? [
+                'id' => $this->cheapestOffer->id,
+                'seller' => ['name' => $this->cheapestOffer->seller->name],
+                'stock' => (int) $this->cheapestOffer->stock,
+            ] : null),
             $this->mergeWhen($this->relationLoaded('offers'), fn () => [
                 'description' => $this->description,
                 'genre' => $this->genre,
