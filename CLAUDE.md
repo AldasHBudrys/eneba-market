@@ -71,5 +71,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extras: bigger yellow logo mark; homepage banners use Steam hero art
 - [x] Extra D: WANT_TO_FIX #5 — cart re-checks stock + price (/api/offers), lowers qty, blocks on sold out
 - [x] Extra E: WANT_TO_FIX #4 — loading skeletons (store, homepage, product, orders)
+- [x] Extra F: WANT_TO_FIX #2 — search box clears after picking a result (WANT_TO_FIX now empty)
 - [ ] README
 - [ ] Chat log export

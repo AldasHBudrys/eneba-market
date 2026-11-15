@@ -46,6 +46,8 @@ export default function SearchBox() {
     navigate(storeUrl(text.trim()))
   }
   const close = () => setOpen(false)
+  // Picking a product (or giving up via "Browse the store") ends the search, so the box clears. "See all" and Enter keep it: the store shows that search.
+  const finish = () => { setText(''); close() }
   const showDropdown = open && text.trim().length >= MIN_CHARS
 
   return (
@@ -88,7 +90,7 @@ export default function SearchBox() {
             <div className="p-6 text-center">
               <p className="font-bold">No matches found</p>
               <p className="text-sm text-muted">Check your spelling or try different keywords.</p>
-              <Link to="/store" onClick={close} className="mt-3 inline-block bg-accent px-4 py-2 text-sm font-extrabold text-black">
+              <Link to="/store" onClick={finish} className="mt-3 inline-block bg-accent px-4 py-2 text-sm font-extrabold text-black">
                 Browse the store
               </Link>
             </div>
@@ -97,7 +99,7 @@ export default function SearchBox() {
               <ul>
                 {results.data.data.slice(0, PREVIEW).map((p) => (
                   <li key={p.slug}>
-                    <Link to={`/product/${p.slug}`} onClick={close} className="flex items-center gap-3 p-2 hover:bg-surface-light focus:bg-surface-light">
+                    <Link to={`/product/${p.slug}`} onClick={finish} className="flex items-center gap-3 p-2 hover:bg-surface-light focus:bg-surface-light">
                       <Cover src={p.image_url} name={p.name} className="h-14 w-10 shrink-0" />
                       <span className="flex-1 text-sm font-semibold">
                         {p.name} {p.platform.name} Key {p.region.name.toUpperCase()}
