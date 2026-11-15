@@ -70,5 +70,6 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra C: Add to cart + Buy now on product cards (cheapest_offer in list APIs, shared toCartItem)
 - [x] Extras: bigger yellow logo mark; homepage banners use Steam hero art
 - [x] Extra D: WANT_TO_FIX #5 — cart re-checks stock + price (/api/offers), lowers qty, blocks on sold out
+- [x] Extra E: WANT_TO_FIX #4 — loading skeletons (store, homepage, product, orders)
 - [ ] README
 - [ ] Chat log export

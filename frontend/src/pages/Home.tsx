@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { api, type Banner, type Deal, type HomeBlock, type Product } from '../api'
 import Cover from '../components/Cover'
 import ProductCard from '../components/ProductCard'
+import { BannerSkeleton, ROW_GRID, RowSkeleton } from '../components/Skeleton'
 
 type BlockProps = { title: string | null; endpoint: string }
 
@@ -27,7 +28,13 @@ export default function Home() {
         <button onClick={() => layout.refetch()} className="mt-4 bg-accent px-5 py-2 font-extrabold text-black">Retry</button>
       </div>
     )
-  if (!layout.data) return <p className="py-24 text-center text-muted">Loading…</p>
+  if (!layout.data)
+    return (
+      <div className="flex flex-col gap-10">
+        <BannerSkeleton />
+        <RowSkeleton />
+      </div>
+    )
 
   return (
     <div className="flex flex-col gap-10">
@@ -44,13 +51,14 @@ function useBlock<T>(endpoint: string) {
   return useQuery({ queryKey: ['block', endpoint], queryFn: () => api<{ data: T[] }>(endpoint).then((r) => r.data) })
 }
 
-function BlockState({ title, failed }: { title: string | null; failed: boolean }) {
-  return <p className="py-8 text-center text-sm text-muted">{failed ? `Couldn't load ${title ?? 'this section'}.` : 'Loading…'}</p>
+/** While a block loads: its skeleton. If it failed: a short message (the rest of the page still shows). */
+function BlockState({ title, failed, skeleton }: { title: string | null; failed: boolean; skeleton: ReactNode }) {
+  return failed ? <p className="py-8 text-center text-sm text-muted">Couldn't load {title ?? 'this section'}.</p> : skeleton
 }
 
 function BannerBlock({ title, endpoint }: BlockProps) {
   const banners = useBlock<Banner>(endpoint)
-  if (!banners.data) return <BlockState title={title} failed={banners.isError} />
+  if (!banners.data) return <BlockState title={title} failed={banners.isError} skeleton={<BannerSkeleton />} />
   const [main, ...side] = banners.data
 
   // Banner art is plain artwork (no logo text), so the overlay carries the title, subtitle and call to action.
@@ -79,12 +87,12 @@ function BannerBlock({ title, endpoint }: BlockProps) {
 function DealsBlock({ title, endpoint }: BlockProps) {
   const deals = useBlock<Deal>(endpoint)
   const now = useNow()
-  if (!deals.data) return <BlockState title={title} failed={deals.isError} />
+  if (!deals.data) return <BlockState title={title} failed={deals.isError} skeleton={<RowSkeleton />} />
 
   return (
     <section>
       <h2 className="mb-4 text-3xl font-bold">{title}</h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className={ROW_GRID}>
         {deals.data.map((d) => (
           <div key={d.product.slug} className="flex flex-col">
             <div className="bg-accent px-2 py-1 text-center text-xs font-extrabold text-black">Ends in {countdown(d.ends_at, now)}</div>
@@ -98,7 +106,7 @@ function DealsBlock({ title, endpoint }: BlockProps) {
 
 function ProductRowBlock({ title, endpoint }: BlockProps) {
   const products = useBlock<Product>(endpoint)
-  if (!products.data) return <BlockState title={title} failed={products.isError} />
+  if (!products.data) return <BlockState title={title} failed={products.isError} skeleton={<RowSkeleton />} />
 
   return (
     <section>
@@ -106,7 +114,7 @@ function ProductRowBlock({ title, endpoint }: BlockProps) {
         <h2 className="text-3xl font-bold">{title}</h2>
         <Link to="/store" className="text-sm font-bold text-accent hover:underline">Show all</Link>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className={ROW_GRID}>
         {products.data.map((p) => <ProductCard key={p.slug} product={p} />)}
       </div>
     </section>

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { api, euro, type Order } from '../api'
 import { useAuth } from '../auth'
+import { OrdersSkeleton } from '../components/Skeleton'
 
 const when = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
 
@@ -25,7 +26,7 @@ export default function Orders() {
           <button onClick={() => orders.refetch()} className="mt-4 bg-accent px-5 py-2 font-extrabold text-black">Retry</button>
         </div>
       ) : !orders.data ? (
-        <p className="py-16 text-center text-muted">Loading orders…</p>
+        <OrdersSkeleton />
       ) : orders.data.length === 0 ? (
         <div className="py-16 text-center">
           <p className="text-xl font-bold">No orders yet</p>

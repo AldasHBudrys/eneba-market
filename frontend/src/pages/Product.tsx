@@ -4,6 +4,7 @@ import { api, ApiError, euro, type Offer, type ProductDetail } from '../api'
 import { toCartItem, useCart } from '../cart'
 import Cover from '../components/Cover'
 import NotFound from '../components/NotFound'
+import { ProductSkeleton } from '../components/Skeleton'
 
 /** Seller rating → Eneba-style label (their examples: 9.91 Superb, 9.63 Excellent). */
 const ratingLabel = (r: number) => (r >= 9.8 ? 'Superb' : r >= 9.5 ? 'Excellent' : r >= 9 ? 'Very good' : 'Good')
@@ -41,7 +42,7 @@ export default function Product() {
         <button onClick={() => product.refetch()} className="mt-4 bg-accent px-5 py-2 font-extrabold text-black">Retry</button>
       </div>
     )
-  if (!product.data) return <p className="py-24 text-center text-muted">Loading product…</p>
+  if (!product.data) return <ProductSkeleton />
 
   const p = product.data
   const title = `${p.name} ${p.platform.name} Key ${p.region.name.toUpperCase()}`

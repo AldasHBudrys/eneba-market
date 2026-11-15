@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { api, euro, filtersQuery, type Page, type Product } from '../api'
 import ProductCard from '../components/ProductCard'
+import { CardGridSkeleton, STORE_GRID } from '../components/Skeleton'
 
 const SORTS = [
   ['popular', 'Popularity: Most popular'],
@@ -131,7 +132,7 @@ export default function Store() {
               <button onClick={() => products.refetch()} className="mt-4 bg-accent px-5 py-2 font-extrabold text-black">Retry</button>
             </div>
           ) : !products.data ? (
-            <p className="py-16 text-center text-muted">Loading products…</p>
+            <CardGridSkeleton count={12} grid={STORE_GRID} />
           ) : products.data.meta.total === 0 ? (
             <div className="py-16 text-center">
               <p className="text-xl font-bold">Sorry, no matches found</p>
@@ -140,7 +141,7 @@ export default function Store() {
             </div>
           ) : (
             <>
-              <div className={`grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 ${products.isPlaceholderData ? 'opacity-60' : ''}`}>
+              <div className={`${STORE_GRID} ${products.isPlaceholderData ? 'opacity-60' : ''}`}>
                 {products.data.data.map((p) => <ProductCard key={p.slug} product={p} />)}
               </div>
               {/* shortcut: one button per page; fine for 3 pages, needs "1 2 … 50" truncation for a big catalog */}
