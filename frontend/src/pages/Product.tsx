@@ -105,7 +105,8 @@ export default function Product() {
         <p className="text-sm leading-relaxed">{p.description}</p>
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm">
           <dt className="text-muted">Genre</dt><dd>{p.genre}</dd>
-          <dt className="text-muted">Release date</dt><dd>{new Date(p.release_date).toLocaleDateString('en-GB', { dateStyle: 'long' })}</dd>
+          {/* release_date is a plain date ("2016-02-26" = midnight UTC); showing it in UTC keeps the day the same in every time zone */}
+          <dt className="text-muted">Release date</dt><dd>{new Date(p.release_date).toLocaleDateString('en-GB', { dateStyle: 'long', timeZone: 'UTC' })}</dd>
         </dl>
       </section>
     </article>
