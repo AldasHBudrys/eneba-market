@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -53,9 +54,12 @@ class Product extends Model
     public function scopeSearch(Builder $query, string $term): void
     {
         $like = '%'.addcslashes($term, '%_\\').'%'; // escape LIKE wildcards typed by the user
+        // `<%` = word_similarity >= the session's threshold (default 0.6), so set ours first. Unlike calling
+        // word_similarity() directly, the operator can use the gin_trgm_ops index (on both sides of the OR).
+        DB::select("select set_config('pg_trgm.word_similarity_threshold', ?, false)", [(string) self::SEARCH_THRESHOLD]);
         $query->where(fn (Builder $q) => $q
             ->where('name', 'ilike', $like)
-            ->orWhereRaw('word_similarity(?, name) >= ?', [$term, self::SEARCH_THRESHOLD]));
+            ->orWhereRaw('? <% name', [$term]));
     }
 
     /** Adds price_cents = cheapest offer that can actually be bought (has stock); null when sold out. */

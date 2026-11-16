@@ -27,7 +27,7 @@
 - Placeholder cover images (placehold.co) — no copyright issues with real game art; marked as a shortcut.
 - "From" price = cheapest offer with stock, and the price filter matches that same price — an offer with 0 keys can't be bought; filtering on any other price showed cards outside the chosen range (found in the store page check).
 - Sold-out products stay listed with price null, sorted last — the brief says browse every product; nulls-last keeps price sorts useful.
-- Search = ILIKE partial match OR pg_trgm word_similarity ≥ 0.3 — measured: "wichter"→Witcher scores 0.30, unrelated names ≤ 0.25; plain similarity() is too low for long names (0.11).
+- Search = ILIKE partial match OR pg_trgm word_similarity ≥ 0.3, written as the `<%` operator with pg_trgm.word_similarity_threshold set to 0.3 (a word_similarity() call can't use the gin index; checked with EXPLAIN) — measured: "wichter"→Witcher scores 0.30, unrelated names ≤ 0.25; plain similarity() is too low for long names (0.11).
 - One "unsold key" definition (GameKey::scopeUnsold) used by stock, price and filters — Day 3 checkout changes one line and everything follows.
 - API Resources shape the JSON; key codes are $hidden on the model — DB columns aren't the public API, and codes can't leak by accident.
 - Price params in cents (min_price=500) — same unit as the DB and responses; frontend converts.
