@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { euro, type Product } from '../api'
 import { toCartItem, useCart } from '../cart'
 import Cover from './Cover'
@@ -56,13 +56,12 @@ export default function ProductCard({ product: p }: { product: Product }) {
 }
 
 /**
- * "Add to cart" / "Buy now" for the offer behind the card's "From" price.
+ * "Add to cart" for the offer behind the card's "From" price, and "View offers" (the product page, every seller), like eneba.com.
  * Stacked full width, 92 px tall in total (2 × 36 px + 8 px gap + 12 px padding): ProductCard's slide distance depends on it.
  */
 function CardActions({ product: p }: { product: Product }) {
   const offer = p.cheapest_offer!
   const add = useCart((s) => s.add)
-  const navigate = useNavigate()
   const [status, setStatus] = useState<'idle' | 'added' | 'max'>('idle')
 
   const item = toCartItem(p, { ...offer, price_cents: p.price_cents! })
@@ -80,9 +79,9 @@ function CardActions({ product: p }: { product: Product }) {
       <button onClick={addToCart} aria-live="polite" className="h-9 bg-accent text-sm font-extrabold text-black hover:brightness-110">
         {status === 'added' ? 'Added ✓' : status === 'max' ? 'Max in cart' : 'Add to cart'}
       </button>
-      <button onClick={() => { add(item); navigate('/cart') }} className="h-9 border-2 border-white text-sm font-extrabold text-white hover:bg-white/10">
-        Buy now
-      </button>
+      <Link to={`/product/${p.slug}`} className="flex h-9 items-center justify-center border-2 border-white text-sm font-extrabold text-white hover:bg-white/10">
+        View offers
+      </Link>
     </div>
   )
 }

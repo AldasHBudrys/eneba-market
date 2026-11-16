@@ -17,7 +17,7 @@ An Eneba-style game key marketplace, built for the Eneba internship task: browse
 - **Search from anywhere**: the header box tolerates typos and partial names ("wichter" finds The Witcher), shows the top 5 as you type, Enter opens the full results.
 - **Homepage built from blocks**: hero banners, rolling deals with countdowns, best sellers. The API decides which blocks show and in what order; each block has its own endpoint and tables.
 - **Product page**: game details plus every seller's offer; the cheapest one in stock is featured, sold-out offers are greyed out.
-- **Cart → checkout → key**: cart in the browser (re-checks price and stock with the server), 3-step checkout, simulated card payment, keys shown right away. Add to cart / Buy now also work straight from product cards.
+- **Cart → checkout → key**: cart in the browser (re-checks price and stock with the server), 3-step checkout, simulated card payment, keys shown right away. Product cards also have Add to cart and View offers on hover.
 - **Accounts**: register, log in, log out. Checkout and order history require login.
 - **Order history** (`/orders`): past orders with keys hidden until "Reveal", plus Copy.
 - **Eneba look**: colors, Metropolis font, header/footer measured against eneba.com, game covers from Steam.
