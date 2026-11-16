@@ -23,6 +23,9 @@ Backend (`cd backend`):
 Frontend (`cd frontend`):
 - `npm run dev`
 - `npm run build`
+- `npm test` (Vitest unit tests) · `npm run lint` (oxlint)
+
+CI (`.github/workflows/ci.yml`) runs backend tests on a throwaway Postgres container plus frontend lint/test/build on every push.
 - `npm test` (Vitest unit tests: cart, auth redirect)
 
 CI: `.github/workflows/ci.yml` runs backend tests (Postgres container) + frontend lint/test/build on every push.
@@ -59,7 +62,7 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 **Day 2**
 - [x] Store page (`/store`: filters, sort, tags, pages; URL query = API params; Metropolis font)
 - [x] Search (header SearchBox: 250 ms pause → top 5 from `/api/products?q=`, Enter → `/store?q=`)
-- [x] Product page with offers (`/product/:slug`: featured = cheapest in stock, offer list, sold-out greyed, 404; Buy disabled until Day 3)
+- [x] Product page with offers (`/product/:slug`: featured = cheapest in stock, offer list, sold-out greyed, 404; Buy now enabled on Day 3)
 - [x] Homepage blocks (`/api/homepage` + `/api/blocks/{banners,deals,bestsellers}`; frontend type→component map; rolling deals)
 - [x] Eneba styling (side-by-side with eneba.com; purple header, focus outlines, card hover, footer, favicon, titles; WANT_TO_FIX #1 #3 fixed)
 
@@ -67,10 +70,10 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Auth (register/login/logout/me, Sanctum 7-day tokens, rate limit + trustProxies, Zustand session in localStorage, demo account demo@eneba-market.test)
 - [x] Cart / checkout / keys (browser cart, 3-step checkout, POST /api/checkout in one transaction with FOR UPDATE SKIP LOCKED, decline card ...0002, last-4-only)
 - [x] Order history (`GET /api/orders` own orders only; `/orders` page with Reveal + Copy; header "My orders")
-- [x] Tests (25 backend tests; concurrency proven with two DB sessions; local + live manual sweep; results in PROGRESS.md)
+- [x] Tests (29 backend + 17 frontend tests; concurrency proven with two DB sessions; local + live manual sweep; results in PROGRESS.md)
 - [x] Extra A: header + footer match eneba.com measurements (1200 px width, 147 px two-row header, nav band, footer columns)
 - [x] Extra B: real game covers (Steam art for 23 games via data migration, <Cover> fallback, footer credit)
-- [x] Extra C: Add to cart + Buy now on product cards (cheapest_offer in list APIs, shared toCartItem)
+- [x] Extra C: Add to cart + View offers on product cards (cheapest_offer in list APIs, shared toCartItem; Eneba-style slide-up on hover)
 - [x] Extras: bigger yellow logo mark; homepage banners use Steam hero art
 - [x] Extra D: WANT_TO_FIX #5 — cart re-checks stock + price (/api/offers), lowers qty, blocks on sold out
 - [x] Extra E: WANT_TO_FIX #4 — loading skeletons (store, homepage, product, orders)
@@ -78,4 +81,5 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra G: filter counts next to each platform/region (facets in /api/products, 0 = greyed out)
 - [x] README (root; boilerplate sub-READMEs removed)
 - [x] Review fixes: search uses the trigram index (`<%`), release date in UTC, Vitest unit tests, GitHub Actions CI
+- [x] Extras: scroll to top on navigation; card fields format as you type (cardFormat.ts)
 - [x] Chat log export (CHAT_LOG.md; AGENTS.md points other agents to CLAUDE.md)
