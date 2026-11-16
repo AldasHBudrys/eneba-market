@@ -4,6 +4,7 @@ import { Link, Navigate } from 'react-router'
 import { api, ApiError, euro, type Order } from '../api'
 import { cartTotal, useCart, useLiveCart } from '../cart'
 import Steps from '../components/Steps'
+import { formatCardNumber, formatCvc, formatExpiry } from '../cardFormat'
 import { CartNotes } from './Cart'
 
 /** Steps 2 + 3: simulated payment, then the bought keys. Only reachable logged in (RequireAuth). */
@@ -63,9 +64,9 @@ export default function Checkout() {
             A card ending in <code>0002</code> is declined.
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <CardField name="number" label="Card number" placeholder="4242 4242 4242 4242" error={cardErrors.number} wide />
-            <CardField name="expiry" label="Expiry (MM/YY)" placeholder="12/28" error={cardErrors.expiry} />
-            <CardField name="cvc" label="CVC" placeholder="123" error={cardErrors.cvc} />
+            <CardField name="number" label="Card number" placeholder="4242 4242 4242 4242" error={cardErrors.number} format={formatCardNumber} wide />
+            <CardField name="expiry" label="Expiry (MM/YY)" placeholder="12/28" error={cardErrors.expiry} format={formatExpiry} />
+            <CardField name="cvc" label="CVC" placeholder="123" error={cardErrors.cvc} format={formatCvc} />
             <CardField name="name" label="Name on card" placeholder="Ada Lovelace" error={cardErrors.name} wide />
           </div>
           {serverError && <p role="alert" className="mt-4 font-semibold text-accent">{serverError}</p>}
@@ -108,13 +109,15 @@ function validateCard(form: FormData): Record<string, string> {
   return errors
 }
 
-function CardField({ name, label, placeholder, error, wide = false }: { name: string; label: string; placeholder: string; error?: string; wide?: boolean }) {
+function CardField({ name, label, placeholder, error, format, wide = false }: { name: string; label: string; placeholder: string; error?: string; format?: (value: string) => string; wide?: boolean }) {
   const id = `card-${name}`
   return (
     <div className={wide ? 'sm:col-span-2' : ''}>
       <label htmlFor={id} className="mb-1 block text-sm font-semibold">{label}</label>
       {/* autoComplete off: discourages the browser from filling in a real saved card on a demo site */}
+      {/* shortcut: rewriting the value moves the cursor to the end, so editing mid-number jumps; track the caret if that matters */}
       <input id={id} name={name} placeholder={placeholder} autoComplete="off" inputMode={name === 'name' ? 'text' : 'numeric'}
+        onInput={format && ((e) => { e.currentTarget.value = format(e.currentTarget.value) })}
         aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined}
         className={`w-full bg-surface px-3 py-2.5 outline-none ${error ? 'border border-accent' : 'border border-transparent'}`} />
       {error && <p id={`${id}-error`} className="mt-1 text-sm text-accent">{error}</p>}

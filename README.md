@@ -94,7 +94,7 @@ Frontend unit tests: `cd frontend && npm test`.
 
 - **CI:** GitHub Actions runs everything below on every push: backend tests against a throwaway Postgres container, and frontend lint, unit tests and build.
 - **29 backend tests** (Neon `test` branch locally): filters, sorts, filter counts, "From" price, typo search, wildcard escaping, homepage blocks, auth and rate limit, checkout (DB prices, rollbacks, declined card, two checkouts never share a key), own orders only.
-- **14 frontend unit tests** (Vitest): cart quantity caps, re-check against the server (new price, lowered quantity, sold out), totals skip sold-out lines, login redirect stays on this site.
+- **17 frontend unit tests** (Vitest): card field formatting, cart quantity caps, re-check against the server (new price, lowered quantity, sold out), totals skip sold-out lines, login redirect stays on this site.
 - **Concurrency checked with two real DB sessions:** session A locks a key and keeps its transaction open; session B runs the same query and got the next key after 0.43 s (0.13 s on a second run): no waiting, no double sale.
 - **Manual runs** locally and on the live site: full purchase, sold-out product, API down (error + Retry), unknown homepage block, phone width.
 
