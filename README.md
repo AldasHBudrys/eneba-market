@@ -109,6 +109,7 @@ The brief is vague on purpose, so the time went into doing the required flow wel
 - Deals are "rolling": each one restarts weekly, so the countdown never runs out.
 - The login token is kept in localStorage (simple; readable by injected scripts, so a production app would use an httpOnly cookie).
 - Laravel trusts all proxies (`trustProxies('*')`) because Render's proxy IPs aren't fixed; needed for correct client IPs in rate limiting.
+- Checkout has no idempotency key. If the response is lost after the order commits, a manual retry creates a second order. Fix: the client creates one UUID per checkout and resends it on every retry, `orders` gets a unique `(user_id, idempotency_key)`, and a repeat returns the existing order.
 - No automated frontend tests; the frontend was checked by hand and in a browser.
 
 ## How I used AI

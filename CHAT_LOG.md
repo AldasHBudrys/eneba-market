@@ -2,7 +2,7 @@
 
 Full conversation with the AI agent (Claude Code, model Claude Opus 5.5) that built this project, exported from the session transcript. **Included:** every prompt and every reply, in order. **Shortened:** each tool call (running a command, editing a file, using the browser) is one line; its output is left out. **Left out:** the model's internal reasoning and automatic system messages. Secrets (database URLs, app keys, tokens) and personal contact details are replaced with `[REDACTED …]`. The demo login is intentionally public.
 
-94 prompts · 330 replies · 917 tool calls
+98 prompts · 339 replies · 955 tool calls
 
 ## Friday 13 November 2026
 
@@ -5385,3 +5385,157 @@ Nothing is committed yet. Once you OK the chat log, I'll re-export it, run the s
 OK, push it
 
 - 🔧 `Bash` Re-export chat log, rescan, tick status
+- 🔧 `Bash` Commit and push chat log, verify on GitHub
+
+### 🤖 Claude
+
+Everything is pushed (`21f4c41`), and every item in the CLAUDE.md status list is ticked.
+
+- **CHAT_LOG.md** was exported again right before the commit: 94 prompts, 330 replies, 917 tool calls, 279 KB. The second scan found no secrets; your email is the only thing redacted. The page opens on GitHub.
+- **AGENTS.md** is in, and the README and DECISIONS changes went with it.
+- The working tree is clean.
+
+**What's left is yours:** reply to the registration email with:
+- GitHub: https://github.com/AldasHBudrys/eneba-market
+- Live site: https://eneba-market.vercel.app (demo account `demo@eneba-market.test` / `demo12345`)
+- Chat log: https://github.com/AldasHBudrys/eneba-market/blob/main/CHAT_LOG.md
+
+The log stops at the "OK, push it" turn; this last exchange isn't in it. I checked that the GitHub page loads, but I didn't look at how the long file renders there.
+
+### 🧑 User
+
+one last thing i want to fix.
+
+In eneba.com the hover works differently. And I'd like to change it to that.
+
+the bottom buttons slide up and are on top of each other
+
+*[image]*
+
+- 🔧 `Read` ProductCard.tsx
+
+### 🤖 Claude
+
+## Card hover plan (Eneba style)
+
+**Now:** two small buttons side by side fade in over the bottom of the cover.
+
+**After:** the card keeps its size. On hover, the whole text panel (platform, title, region, price) slides up over the bottom of the cover, and two full-width buttons appear under the price, stacked on top of each other, as in your screenshot.
+
+**How:** only [ProductCard.tsx](frontend/src/components/ProductCard.tsx) changes, CSS classes only, no new code paths.
+- The buttons live inside the text panel, under the price. A negative bottom margin of the same height as the buttons means they don't add height to the card, and `overflow-hidden` hides them below the card's bottom edge.
+- On hover, or keyboard focus inside the card, the panel moves up by that height (`-translate-y`) with a short transition. It has the card's background, so it covers the bottom of the cover.
+- The grid never jumps, and the loading skeletons still match the card size.
+- Add-to-cart behaves as before ("Added ✓" and "Max in cart").
+
+**Decisions (my picks)**
+- **H1, buttons:** yellow **Add to cart** on top, outlined white button below, both full width, like Eneba.
+- **H2, second button:** keep **Buy now**, because you asked for it earlier, styled like Eneba's outlined "View offers". The alternative is to switch to "View offers" (goes to the product page) to match Eneba exactly, but the title and cover already link there.
+- **H3, touch screens (no hover):** the buttons always sit under the price, so the card is a bit taller on phones and nothing covers the cover permanently.
+- **H4, what stays:** the small lift and shadow on hover. With "reduce motion" turned on there's no slide; the buttons simply appear. Sold-out cards don't slide (no buttons, same as now).
+- **H5, left out:** Eneba's green outline, cashback badge, heart icon and "Xbox Live" strip. They aren't part of the hover mechanic, and we don't have cashback or a wishlist.
+
+**I'll check:** on the store grid and the homepage rows (narrower cards) that the panel slides up, the buttons stack, card heights don't change, Tab into a card triggers the slide, and phone width shows the buttons in place. Then DECISIONS line, commit, push, live check.
+
+### 🧑 User
+
+Yes, use your picks
+
+- 🔧 `Bash` Rewrite card with slide-up panel
+- 🔧 `Bash` Fix indentation, typecheck, lint
+- 🔧 `browser.preview_list`
+- 🔧 `browser.preview_start` backend
+- 🔧 `browser.preview_start` frontend
+- 🔧 `browser.navigate` http://localhost:5173/store
+- 🔧 `browser.javascript_tool` javascript_exec
+
+### 🤖 Claude
+
+Checking the measurements: the hidden buttons peek 22 px into the card, so the size math is off somewhere.
+
+- 🔧 `browser.javascript_tool` javascript_exec
+
+### 🤖 Claude
+
+Layout is right (the first reading was taken mid-scroll): the buttons start exactly at the card's bottom edge. Now testing a real hover.
+
+- 🔧 `browser.javascript_tool` javascript_exec
+- 🔧 `browser.computer` screenshot
+- 🔧 `browser.resize_window`
+- 🔧 `browser.javascript_tool` javascript_exec
+- 🔧 `browser.browser_batch`
+- 🔧 `browser.browser_batch`
+
+### 🤖 Claude
+
+The hover works: the second card's panel slid up and the two stacked buttons are showing. Zooming in for a closer look, then checking the homepage rows, keyboard focus and phone width.
+
+- 🔧 `browser.computer` zoom
+- 🔧 `browser.javascript_tool` javascript_exec
+- 🔧 `browser.navigate` http://localhost:5173/store?sort=price_asc&page=3
+- 🔧 `browser.javascript_tool` javascript_exec
+- 🔧 `browser.navigate` http://localhost:5173/
+- 🔧 `browser.javascript_tool` javascript_exec
+- 🔧 `browser.resize_window`
+- 🔧 `browser.navigate` http://localhost:5173/store
+- 🔧 `browser.javascript_tool` javascript_exec
+
+### 🤖 Claude
+
+All checks pass, including phone width (buttons always visible, no sideways scroll). Committing and pushing.
+
+- 🔧 `browser.resize_window`
+- 🔧 `Bash` Log decision, commit and push
+- 🔧 `Bash` Wait for live site to serve the new card CSS
+- 🔧 `Bash` Inspect live CSS for the 92px rules
+
+### 🤖 Claude
+
+It's live; my first check's pattern was wrong.
+
+### 🤖 Claude
+
+Cards now hover the Eneba way. On hover the text panel slides up over the bottom of the cover, and two full-width buttons appear under the price, stacked: yellow **Add to cart** on top, outlined **Buy now** below. It's pushed (`61654a1`) and live on Vercel.
+
+**How it works:** the change is all in [ProductCard.tsx](frontend/src/components/ProductCard.tsx). The buttons sit inside the text panel, 92 px tall in total. A matching −92 px bottom margin keeps them out of the card's height, and `overflow-hidden` hides them below the card's bottom edge. On hover, or keyboard focus inside the card, the panel moves up 92 px, so the card never changes size and the grid doesn't jump.
+
+**Checked locally:**
+- **Store, desktop:** a real mouse hover slides the panel up and shows the stacked buttons. All cards stay the same height (460 px) with or without hover.
+- **Keyboard:** Tab focus on a card's title triggers the same slide.
+- **Homepage rows:** the narrower 190 px cards work too, and the button labels fit.
+- **Phone width:** no slide; the buttons always show under the price, and nothing scrolls sideways.
+- **Live:** the new CSS rules are in the deployed stylesheet.
+
+I couldn't test a sold-out card, because the dev database has none right now. That case is simple: no buttons, so no slide. On phones the cards are now about 90 px taller than the loading skeleton, so a small jump when data arrives is likely there; desktop isn't affected.
+
+### 🧑 User
+
+i do want to change the buy now to view offers and take to product page
+
+- 🔧 `Bash` Find Buy now references
+- 🔧 `Bash` Replace Buy now with View offers link, update docs
+- 🔧 `browser.navigate` http://localhost:5173/store
+- 🔧 `browser.javascript_tool` javascript_exec
+- 🔧 `Bash` Confirm DECISIONS line updated
+- 🔧 `Bash` Commit and push View offers change
+
+### 🤖 Claude
+
+The card's hover buttons are now **Add to cart** (yellow) and **View offers** (outlined), stacked as on Eneba. View offers is a link to the product page, where all the sellers' offers are listed. It's pushed (`d039133`), and Vercel usually has it live within a minute.
+
+- **Code:** in [ProductCard.tsx](frontend/src/components/ProductCard.tsx), the "Buy now" button became a link styled the same, at the same 36 px height, so the slide distance didn't change.
+- **Checked locally:** clicking View offers on the first card opened `/product/resident-evil-4-playstation-europe`, and all cards are still the same height.
+- **Docs:** the README features line and the DECISIONS line now say "View offers".
+- **Not changed:** the Buy now button on the product page still adds the offer and opens the cart.
+
+I didn't check that this change is live on the site.
+
+### 🧑 User
+
+yes, aslo i want to add this to readme 
+
+Known limitation: checkout has no idempotency key. If the response is lost after the order commits, a manual retry creates a second order. Fix: client sends a UUID per attempt, orders gets a unique (user_id, idempotency_key), a repeat returns the existing order.
+
+- 🔧 `Grep` No automated frontend tests
+- 🔧 `Bash` Insert idempotency limit into README
+- 🔧 `Bash` Fix UUID wording, re-export chat log, rescan
