@@ -23,6 +23,9 @@ Backend (`cd backend`):
 Frontend (`cd frontend`):
 - `npm run dev`
 - `npm run build`
+- `npm test` (Vitest unit tests: cart, auth redirect)
+
+CI: `.github/workflows/ci.yml` runs backend tests (Postgres container) + frontend lint/test/build on every push.
 
 ## Scope in
 - Store: filters (platform, region, price), sort, search by name; state in the URL
@@ -74,4 +77,5 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra F: WANT_TO_FIX #2 — search box clears after picking a result (WANT_TO_FIX now empty)
 - [x] Extra G: filter counts next to each platform/region (facets in /api/products, 0 = greyed out)
 - [x] README (root; boilerplate sub-READMEs removed)
+- [x] Review fixes: search uses the trigram index (`<%`), release date in UTC, Vitest unit tests, GitHub Actions CI
 - [x] Chat log export (CHAT_LOG.md; AGENTS.md points other agents to CLAUDE.md)

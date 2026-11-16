@@ -86,11 +86,15 @@ cd backend
 php artisan test
 ```
 
+Frontend unit tests: `cd frontend && npm test`.
+
 > Windows note: on this machine antivirus deleted Laravel's `server.php`, so `artisan serve` exited; `php -S localhost:8000 -t public` (from `backend/`) does the same job.
 
 ## Testing
 
-- **29 backend tests** (Neon `test` branch): filters, sorts, filter counts, "From" price, typo search, wildcard escaping, homepage blocks, auth and rate limit, checkout (DB prices, rollbacks, declined card, two checkouts never share a key), own orders only.
+- **CI:** GitHub Actions runs everything below on every push: backend tests against a throwaway Postgres container, and frontend lint, unit tests and build.
+- **29 backend tests** (Neon `test` branch locally): filters, sorts, filter counts, "From" price, typo search, wildcard escaping, homepage blocks, auth and rate limit, checkout (DB prices, rollbacks, declined card, two checkouts never share a key), own orders only.
+- **14 frontend unit tests** (Vitest): cart quantity caps, re-check against the server (new price, lowered quantity, sold out), totals skip sold-out lines, login redirect stays on this site.
 - **Concurrency checked with two real DB sessions:** session A locks a key and keeps its transaction open; session B runs the same query and got the next key after 0.43 s (0.13 s on a second run): no waiting, no double sale.
 - **Manual runs** locally and on the live site: full purchase, sold-out product, API down (error + Retry), unknown homepage block, phone width.
 
@@ -110,7 +114,7 @@ The brief is vague on purpose, so the time went into doing the required flow wel
 - The login token is kept in localStorage (simple; readable by injected scripts, so a production app would use an httpOnly cookie).
 - Laravel trusts all proxies (`trustProxies('*')`) because Render's proxy IPs aren't fixed; needed for correct client IPs in rate limiting.
 - Checkout has no idempotency key. If the response is lost after the order commits, a manual retry creates a second order. Fix: the client creates one UUID per checkout and resends it on every retry, `orders` gets a unique `(user_id, idempotency_key)`, and a repeat returns the existing order.
-- No automated frontend tests; the frontend was checked by hand and in a browser.
+- Frontend tests cover the pure logic only; pages and components were checked by hand and in a browser (component tests would need jsdom + Testing Library).
 
 ## How I used AI
 

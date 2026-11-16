@@ -1,0 +1,53 @@
+# Runs on every push and pull request. Backend tests get a throwaway Postgres container, never a Neon branch.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:17 # ships the pg_trgm extension the migrations enable
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres # throwaway container, not a real secret
+          POSTGRES_DB: eneba_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: pdo_pgsql
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      # The tests only run against .env.testing (see tests/TestCase.php), so point it at the container.
+      - run: |
+          cp .env.example .env.testing
+          sed -i 's#^DB_URL=.*#DB_URL=postgresql://postgres:postgres@localhost:5432/eneba_test#' .env.testing
+          php artisan key:generate --env=testing
+      - run: php artisan test
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build # includes the TypeScript check (tsc -b)
