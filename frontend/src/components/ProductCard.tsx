@@ -7,52 +7,57 @@ import Cover from './Cover'
 /**
  * Eneba-style product tile: cover, platform, title, region, old price + discount, price.
  * Buttons can't live inside a link (invalid HTML, confusing for screen readers), so the card is a box
- * with two links (cover, text) and a separate button bar over the bottom of the cover.
+ * with two links (cover, text) and the buttons beside them.
+ *
+ * Hover (like eneba.com): the text panel slides up over the bottom of the cover and reveals the buttons under the price.
+ * The buttons are 92 px tall; a -92 px bottom margin keeps them out of the card's height and overflow-hidden hides them,
+ * so the grid never jumps. Touch screens (no hover) skip the trick: the buttons always sit under the price.
  */
 export default function ProductCard({ product: p }: { product: Product }) {
   const url = `/product/${p.slug}`
   const buyable = p.cheapest_offer && p.price_cents !== null
+  const slide = '[@media(hover:hover)]:-mb-[92px] [@media(hover:hover)]:group-hover:-translate-y-[92px] [@media(hover:hover)]:group-focus-within:-translate-y-[92px]'
 
   return (
-    <div className="group flex flex-col bg-surface-dark shadow-black/40 transition focus-within:-translate-y-1 hover:-translate-y-1 hover:shadow-lg">
-      <div className="relative">
-        {/* Same destination as the title link below: hidden from keyboard and screen readers to avoid a duplicate stop. */}
-        <Link to={url} tabIndex={-1} aria-hidden>
-          <Cover src={p.image_url} name={p.name} className="aspect-[3/4] w-full" />
+    <div className="group flex flex-col overflow-hidden bg-surface-dark shadow-black/40 transition focus-within:-translate-y-1 hover:-translate-y-1 hover:shadow-lg">
+      {/* Same destination as the title link below: hidden from keyboard and screen readers to avoid a duplicate stop. */}
+      <Link to={url} tabIndex={-1} aria-hidden>
+        <Cover src={p.image_url} name={p.name} className="aspect-[3/4] w-full" />
+      </Link>
+      <div className={`relative flex flex-1 flex-col bg-surface-dark transition-transform duration-200 motion-reduce:transition-none ${buyable ? slide : ''}`}>
+        <Link to={url} className="flex flex-1 flex-col gap-1 p-3">
+          <span className="text-xs text-muted">{p.platform.name}</span>
+          <h3 className="line-clamp-2 text-sm font-bold group-hover:underline">
+            {p.name} {p.platform.name} Key {p.region.name.toUpperCase()}
+          </h3>
+          <span className="text-xs font-semibold uppercase text-cashback">{p.region.name}</span>
+          <div className="mt-auto pt-2">
+            {p.price_cents === null ? (
+              <span className="font-bold text-muted">Sold out</span>
+            ) : (
+              <>
+                <div className="text-xs text-muted">
+                  From{' '}
+                  {p.discount_percent ? (
+                    <>
+                      <s>{euro(p.rrp_cents)}</s> <span className="font-semibold text-discount">-{p.discount_percent}%</span>
+                    </>
+                  ) : null}
+                </div>
+                <div className="text-xl font-extrabold">{euro(p.price_cents)}</div>
+              </>
+            )}
+          </div>
         </Link>
         {buyable && <CardActions product={p} />}
       </div>
-      <Link to={url} className="flex flex-1 flex-col gap-1 p-3">
-        <span className="text-xs text-muted">{p.platform.name}</span>
-        <h3 className="line-clamp-2 text-sm font-bold group-hover:underline">
-          {p.name} {p.platform.name} Key {p.region.name.toUpperCase()}
-        </h3>
-        <span className="text-xs font-semibold uppercase text-cashback">{p.region.name}</span>
-        <div className="mt-auto pt-2">
-          {p.price_cents === null ? (
-            <span className="font-bold text-muted">Sold out</span>
-          ) : (
-            <>
-              <div className="text-xs text-muted">
-                From{' '}
-                {p.discount_percent ? (
-                  <>
-                    <s>{euro(p.rrp_cents)}</s> <span className="font-semibold text-discount">-{p.discount_percent}%</span>
-                  </>
-                ) : null}
-              </div>
-              <div className="text-xl font-extrabold">{euro(p.price_cents)}</div>
-            </>
-          )}
-        </div>
-      </Link>
     </div>
   )
 }
 
 /**
  * "Add to cart" / "Buy now" for the offer behind the card's "From" price.
- * Desktop: fades in on hover or keyboard focus. Touch screens (no hover): always visible.
+ * Stacked full width, 92 px tall in total (2 × 36 px + 8 px gap + 12 px padding): ProductCard's slide distance depends on it.
  */
 function CardActions({ product: p }: { product: Product }) {
   const offer = p.cheapest_offer!
@@ -71,11 +76,11 @@ function CardActions({ product: p }: { product: Product }) {
   }
 
   return (
-    <div className="absolute inset-x-0 bottom-0 flex gap-1.5 bg-gradient-to-t from-black/85 to-transparent p-2 pt-6 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
-      <button onClick={addToCart} aria-live="polite" className="flex-1 bg-accent py-2 text-xs font-extrabold text-black hover:brightness-110">
+    <div className="flex h-[92px] flex-col gap-2 px-3 pb-3">
+      <button onClick={addToCart} aria-live="polite" className="h-9 bg-accent text-sm font-extrabold text-black hover:brightness-110">
         {status === 'added' ? 'Added ✓' : status === 'max' ? 'Max in cart' : 'Add to cart'}
       </button>
-      <button onClick={() => { add(item); navigate('/cart') }} className="flex-1 bg-white py-2 text-xs font-extrabold text-black hover:bg-soft">
+      <button onClick={() => { add(item); navigate('/cart') }} className="h-9 border-2 border-white text-sm font-extrabold text-white hover:bg-white/10">
         Buy now
       </button>
     </div>
