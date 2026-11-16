@@ -74,4 +74,4 @@ Real payments, reviews, wishlist, seller dashboard, emails, admin panel, passwor
 - [x] Extra F: WANT_TO_FIX #2 — search box clears after picking a result (WANT_TO_FIX now empty)
 - [x] Extra G: filter counts next to each platform/region (facets in /api/products, 0 = greyed out)
 - [x] README (root; boilerplate sub-READMEs removed)
-- [ ] Chat log export
+- [x] Chat log export (CHAT_LOG.md; AGENTS.md points other agents to CLAUDE.md)

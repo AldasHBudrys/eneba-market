@@ -125,6 +125,6 @@ Built with Claude Code as a pair programmer. For every feature: Claude wrote a s
 | [DECISIONS.md](DECISIONS.md) | every design choice, one line each |
 | [PROGRESS.md](PROGRESS.md) | what was built, why, test results |
 | [WANT_TO_FIX.md](WANT_TO_FIX.md) | parked issues and how they were fixed |
-| [CLAUDE.md](CLAUDE.md) | project rules for the AI agent |
+| [CLAUDE.md](CLAUDE.md) | project rules for the AI agent ([AGENTS.md](AGENTS.md) points other agents there) |
 
 Game images © their publishers, via Steam.
