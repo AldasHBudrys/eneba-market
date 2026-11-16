@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import type { ReactNode } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router'
+import { useEffect, type ReactNode } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigationType } from 'react-router'
 import { api, filtersQuery } from '../api'
 import { useAuth } from '../auth'
 import { cartCount, useCart } from '../cart'
@@ -13,6 +13,7 @@ const CONTAINER = 'mx-auto w-full max-w-[1240px] px-5'
 export default function Layout() {
   return (
     <>
+      <ScrollToTop />
       <header>
         {/* Row 1: 20 px padding + 57 px row (search box height) = Eneba's 97 px. Phones: search wraps to its own row. */}
         <div className={`${CONTAINER} flex flex-wrap items-center gap-x-6 gap-y-3 py-5`}>
@@ -33,6 +34,17 @@ export default function Layout() {
       <Footer />
     </>
   )
+}
+
+/** BrowserRouter keeps the old scroll position on navigation; jump to the top like a normal page load.
+ *  Back/Forward (POP) is left alone so the browser can return you to where you were. */
+function ScrollToTop() {
+  const { pathname, search } = useLocation()
+  const type = useNavigationType()
+  useEffect(() => {
+    if (type !== 'POP') window.scrollTo(0, 0)
+  }, [pathname, search, type])
+  return null
 }
 
 function Logo({ small = false }: { small?: boolean }) {

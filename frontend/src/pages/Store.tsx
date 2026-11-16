@@ -155,7 +155,7 @@ export default function Store() {
               <nav aria-label="Pages" className="mt-6 flex justify-center gap-2">
                 {Array.from({ length: products.data.meta.last_page }, (_, i) => i + 1).map((n) => (
                   <button key={n} aria-current={n === products.data.meta.current_page ? 'page' : undefined}
-                    onClick={() => { set('page', n === 1 ? null : String(n)); window.scrollTo(0, 0) }}
+                    onClick={() => set('page', n === 1 ? null : String(n))}
                     className={`size-9 font-bold ${n === products.data.meta.current_page ? 'bg-accent text-black' : 'bg-surface-dark hover:bg-surface'}`}>
                     {n}
                   </button>
